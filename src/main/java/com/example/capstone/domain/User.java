@@ -26,9 +26,15 @@ public class User {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 255)
-    private String password; // 비밀번호 (해시 저장 권장)
+    @Column(nullable = false, length = 100)
+    private String name;
 
+    @Column(nullable = false, length = 255)
+    private String password; // 비밀번호
+
+    @Column(name = "is_activated", nullable = false)
+    private Boolean isActivated = false; // 기본값: false (인증 필요)
+    
     @Column(name = "reminder_setting", nullable = false)
     private Boolean reminderSetting = false; // 리마인드 푸시 설정 여부
 
