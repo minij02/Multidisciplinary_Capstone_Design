@@ -12,12 +12,25 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    
+    // JPA 및 데이터베이스 관련 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 드라이버 (최신 Spring Boot 3 버전)
+
+    // Lombok 의존성 추가 (컴파일 및 어노테이션 처리기 포함)
+    compileOnly 'org.projectlombok:lombok' 
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 개발 도구
+    implementation 'org.springframework.boot:spring-boot-devtools'
+
+    // Test Dependencies
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.boot:spring-boot-devtools'
 }
 
 test {
