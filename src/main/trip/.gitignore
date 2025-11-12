@@ -12,6 +12,10 @@
 # Spring Boot의 정적 리소스 폴더입니다.
 ../resources/static
 
+# Gradle Build/Cache Files
+.gradle/
+build/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
