@@ -1,21 +1,21 @@
-#root {
-  /* 최대 너비를 390px로 제한 */
-  max-width: 390px; 
-  height: 844px;
+html, body {
   margin: 0;
-  /* (선택적) 모바일 환경처럼 보이도록 박스 쉐도우 추가 */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  height: 100%;
+  background-color: #E5ECF4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Pretendard', sans-serif; /* 또는 시스템 폰트 */
 }
 
-body {
-  /* 브라우저 전체 높이를 사용하도록 설정 */
-  min-height: 100vh; 
-  /* 마진을 제거하여 불필요한 스크롤 방지 */
-  margin: 0; 
-  /* Flexbox를 활성화 */
-  display: flex; 
-  /* Flexbox 아이템(여기서는 #root)을 세로 중앙에 배치 */
-  align-items: center; 
-  /* Flexbox 아이템을 가로 중앙에 배치 (선택적: #root에 margin: auto가 없다면 필요) */
-  justify-content: center; 
+#root {
+  width: 390px;
+  height: 844px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
