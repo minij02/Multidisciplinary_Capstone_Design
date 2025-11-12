@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/RegisterForm.css'
+import '../../styles/auth/RegisterForm.css'
 import { Eye, EyeOff, XCircle } from 'lucide-react';
 
 interface RegisterFormProps {

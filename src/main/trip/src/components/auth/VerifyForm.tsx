@@ -1,6 +1,6 @@
 import React from 'react';
 import { XCircle } from 'lucide-react';
-import '../../styles/VerifyForm.css'
+import '../../styles/auth/VerifyForm.css'
 
 interface VerifyFormProps {
   email: string;

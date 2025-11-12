@@ -2,9 +2,12 @@ package com.example.capstone.service;
 
 import com.example.capstone.domain.User;
 import com.example.capstone.domain.VerificationCode;
+import com.example.capstone.dto.LoginRequest;
+import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
 import com.example.capstone.repository.UserRepository;
 import com.example.capstone.repository.VerificationCodeRepository;
+import com.example.capstone.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ public class AuthService {
     private final VerificationCodeRepository verificationCodeRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 회원가입을 처리하고 인증 코드를 발송합니다.
@@ -118,5 +122,30 @@ public class AuthService {
         vc.setExpiryTime(LocalDateTime.now().plusMinutes(5)); // 5분 후 만료
         vc.setVerified(false);
         verificationCodeRepository.save(vc);
+    }
+
+     /**
+     * 일반 로그인 처리
+     */
+    public LoginResponse login(LoginRequest request) {
+        // 1. 이메일로 사용자 찾기
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+        // 2. 계정이 활성화되지 않았을 경우
+        if (!user.getIsActivated()) {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않은 계정입니다.");
+        }
+
+        // 3. 비밀번호 검증
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 4. JWT 토큰 생성
+        String token = jwtTokenProvider.generateToken(user.getUserId());
+
+        // 5. 응답 객체 반환
+        return new LoginResponse(token, "Bearer", user.getUserId());
     }
 }
