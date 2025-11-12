@@ -1,5 +1,7 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.dto.LoginRequest;
+import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
 import com.example.capstone.service.AuthService;
 import jakarta.validation.Valid;
@@ -57,4 +59,14 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/login")
+public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    try {
+        LoginResponse response = authService.login(request); // 서비스 레이어 호출
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (IllegalArgumentException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+}
 }
