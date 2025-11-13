@@ -3,6 +3,7 @@ package com.example.capstone.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.example.capstone.service.CustomOAuth2UserService;
+import com.example.capstone.security.OAuth2SuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     /**
      * Spring Security 필터 체인을 설정합니다.
@@ -35,17 +37,14 @@ public class SecurityConfig {
             )
             
             // 2. OAuth 2.0 로그인 설정
-            .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login") // 로그인 페이지 경로 (프론트엔드 경로와 일치)
-                .defaultSuccessUrl("/main-page", true) // 로그인 성공 후 리디렉션될 URL
+             .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
                 )
+                .successHandler(oAuth2SuccessHandler) // 로그인 성공 시 JWT 발급 및 리디렉션
             );
             
-            // 3. 폼 로그인/로그아웃 설정 (기존 로그인 방식 유지를 위해 필요)
-            // .formLogin(form -> form.disable()) // 일반 폼 로그인을 비활성화하려면 사용
-
         return http.build();
     }
 

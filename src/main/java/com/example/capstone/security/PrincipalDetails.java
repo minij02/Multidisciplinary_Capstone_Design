@@ -27,6 +27,10 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
+    public User getUser() {
+        return this.user;
+    }
+
     // --- UserDetails 구현 (일반 로그인 시 사용) ---
 
     @Override
