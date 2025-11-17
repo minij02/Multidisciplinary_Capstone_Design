@@ -1,11 +1,16 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.domain.VerificationCode;
 import com.example.capstone.dto.LoginRequest;
 import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
+import com.example.capstone.dto.ResetPasswordRequest;
 import com.example.capstone.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +65,21 @@ public class AuthController {
         }
     }
 
+    /**
+     * [Create New Password Step] 인증 후 최종적으로 비밀번호를 재설정합니다.
+     * POST /api/auth/reset-password
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return new ResponseEntity<>("비밀번호 재설정이 완료되었습니다. 새로 로그인해주세요.", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // 새 비밀번호 불일치, 인증 코드 오류, 만료 등
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @PostMapping("/login")
 public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
     try {

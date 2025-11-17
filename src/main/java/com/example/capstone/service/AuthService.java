@@ -5,6 +5,7 @@ import com.example.capstone.domain.VerificationCode;
 import com.example.capstone.dto.LoginRequest;
 import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
+import com.example.capstone.dto.ResetPasswordRequest;
 import com.example.capstone.repository.UserRepository;
 import com.example.capstone.repository.VerificationCodeRepository;
 import com.example.capstone.security.JwtTokenProvider;
@@ -124,6 +125,38 @@ public class AuthService {
         verificationCodeRepository.save(vc);
     }
 
+    /**
+     * [Create New Password Step] 인증 코드가 유효한지 확인하고 새 비밀번호로 업데이트합니다.
+     */
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        // 1. 새 비밀번호 유효성 검사 (비밀번호 일치 확인)
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
+        // 2. 인증 코드 확인 (VerificationCode 테이블 사용)
+        VerificationCode vc = verificationCodeRepository.findByEmailAndCode(request.getEmail(), request.getCode())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 인증 코드 또는 이메일입니다."));
+
+        // 3. 만료 시간 확인
+        if (vc.getExpiryTime().isBefore(LocalDateTime.now())) {
+            verificationCodeRepository.delete(vc); 
+            throw new IllegalArgumentException("인증 코드가 만료되었습니다. 재시도해주세요.");
+        }
+
+        // 4. User 엔티티 조회 및 비밀번호 업데이트
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+        
+        // 새 비밀번호 해싱 및 저장
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        // 5. 인증 코드 정리
+        verificationCodeRepository.delete(vc);
+    }
+    
      /**
      * 일반 로그인 처리
      */
