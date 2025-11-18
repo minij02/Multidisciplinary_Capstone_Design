@@ -5,21 +5,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
 import com.example.capstone.service.CustomOAuth2UserService;
+import com.example.capstone.security.JwtAuthenticationFilter;
 import com.example.capstone.security.OAuth2SuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
@@ -39,6 +43,12 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
             )
             
+            // JWT 인증 필터 등록
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+            // 세션 관리 상태를 Stateless(무상태)로 설정 (JWT 사용 시 필수)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
             // 세션 기반 폼 로그인을 비활성화하여 기본 로그인 페이지로 리다이렉트 되는 것을 방지
             .formLogin(form -> form.disable())
         
