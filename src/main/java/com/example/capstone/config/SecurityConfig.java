@@ -30,13 +30,12 @@ public class SecurityConfig {
             
             // 1. 요청별 인가 규칙 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**").permitAll() // 인증/로그인 관련 경로는 모두 허용
+                .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**", "/api/**").permitAll() // 인증/로그인 관련 경로는 모두 허용
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
             )
             
             // 2. OAuth 2.0 로그인 설정
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login") // 로그인 페이지 경로 (프론트엔드 경로와 일치)
                 .defaultSuccessUrl("/main-page", true) // 로그인 성공 후 리디렉션될 URL
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
