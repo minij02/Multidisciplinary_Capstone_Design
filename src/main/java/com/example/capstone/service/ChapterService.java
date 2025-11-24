@@ -34,18 +34,16 @@ public class ChapterService {
         // 2. 온보딩 질문 답변 저장 (OnboardingQuestion 테이블)
         OnboardingQuestion onboard = new OnboardingQuestion();
         onboard.setUser(user);
+        onboard.setStartDate(request.getStartDate());
         onboard.setTravelStyle(request.getTravelStyle());
         onboard.setTravelTheme(request.getTravelTheme());
-        onboard.setTravelFrequency(request.getTravelFrequency());
+        onboard.setTravelTitle(request.getTravelTitle());
         
         onboardingQuestionRepository.save(onboard);
 
         // 3. 새 여행 챕터 생성 및 저장 (TravelChapter 테이블)
         TravelChapter newChapter = new TravelChapter();
         newChapter.setUser(user);
-        
-        // 제목은 일단 null로 저장하고 추후 입력
-        newChapter.setTitle(null); 
         
         TravelChapter savedChapter = travelChapterRepository.save(newChapter);
         
