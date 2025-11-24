@@ -4,6 +4,7 @@
 # Gradle build directory
 /build/
 /bin/
+/.gradle/
 
 # Gradle wrapper logs
 hs_err_pid*.log
