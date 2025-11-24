@@ -1,22 +1,29 @@
 package com.example.capstone.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull; 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate; 
 
 @Getter
 @Setter
 public class NewChapterRequest {
 
-    // 온보딩 질문 Q1: 어떤 여행을 기록하고 싶으신가요?
+    // Q1: 여행 시작 날짜 (Onboarding -1)
+    @NotNull(message = "여행 시작 날짜는 필수입니다.")
+    private LocalDate startDate; 
+
+    // Q2: 여행 스타일 (Onboarding -2)
     @NotBlank(message = "여행 스타일은 필수입니다.")
     private String travelStyle; 
 
-    // 온보딩 질문 Q2: 여행의 테마는 무엇인가요?
+    // Q3: 여행 테마 (Onboarding -3)
     @NotBlank(message = "여행 테마는 필수입니다.")
     private String travelTheme;
 
-    // 온보딩 질문 Q3: 얼마나 자주 기록하고 싶으신가요?
-    @NotBlank(message = "기록 빈도는 필수입니다.")
-    private String travelFrequency;
+    // Q4: 여행 제목 (Onboarding -4)
+    @NotBlank(message = "여행 제목은 필수입니다.")
+    private String travelTitle;
 }

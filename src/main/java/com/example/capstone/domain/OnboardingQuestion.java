@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,14 +27,21 @@ public class OnboardingQuestion {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Q1: 여행 시작 날짜 (Onboarding -1)
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    // Q2: 여행 스타일 (Onboarding -2)
     @Column(name = "travel_style", nullable = false, length = 50)
-    private String travelStyle; // 여행 스타일
+    private String travelStyle; 
 
+    // Q3: 여행 테마 (Onboarding -3)
     @Column(name = "travel_theme", nullable = false, length = 255)
-    private String travelTheme; // 여행 테마
+    private String travelTheme;
 
-    @Column(name = "travel_frequency", nullable = false, length = 50)
-    private String travelFrequency; // 기록 빈도
+    // Q4: 여행 제목 (Onboarding -4)
+    @Column(name = "travel_title", nullable = false, length = 255)
+    private String travelTitle;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
