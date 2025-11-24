@@ -40,6 +40,7 @@ public class SecurityConfig {
             // 1. 요청별 인가 규칙 설정
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**").permitAll() // 인증/로그인 관련 경로는 모두 허용
+                .requestMatchers("/api/mypage/**").authenticated()
                 .anyRequest().authenticated() // 나머지 요청은 인증 필요
             )
             

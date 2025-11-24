@@ -1,6 +1,5 @@
 package com.example.capstone.controller;
 
-import com.example.capstone.domain.VerificationCode;
 import com.example.capstone.dto.LoginRequest;
 import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
@@ -8,8 +7,6 @@ import com.example.capstone.dto.ResetPasswordRequest;
 import com.example.capstone.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
