@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -49,6 +50,15 @@ public class ChapterService {
         // 3. 새 여행 챕터 생성 및 저장 (TravelChapter 테이블)
         TravelChapter newChapter = new TravelChapter();
         newChapter.setUser(user);
+
+        newChapter.setTitle(request.getTravelTitle()); 
+
+        newChapter.setStartDate(request.getStartDate());
+       
+        newChapter.setEndDate(request.getEndDate()); 
+
+        newChapter.setIsPublished(false); 
+        newChapter.setTotalCost(BigDecimal.ZERO);
         
         TravelChapter savedChapter = travelChapterRepository.save(newChapter);
         

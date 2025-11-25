@@ -11,10 +11,14 @@ import java.time.LocalDate;
 @Setter
 public class NewChapterRequest {
 
-    // Q1: 여행 시작 날짜 (Onboarding -1)
+    // Q1-1: 여행 시작 날짜
     @NotNull(message = "여행 시작 날짜는 필수입니다.")
     private LocalDate startDate; 
 
+    // Q1-2: 여행 종료 날짜
+    @NotNull(message = "여행 종료 날짜는 필수입니다.")
+    
+    private LocalDate endDate;
     // Q2: 여행 스타일 (Onboarding -2)
     @NotBlank(message = "여행 스타일은 필수입니다.")
     private String travelStyle; 

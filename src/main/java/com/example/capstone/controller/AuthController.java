@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -83,7 +85,8 @@ public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request); // 서비스 레이어 호출
         return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        Map<String, String> errorResponse = Map.of("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }
 }
