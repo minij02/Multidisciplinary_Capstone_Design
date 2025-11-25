@@ -88,7 +88,7 @@ const firstDayOfMonth = (year: number, month: number): number => {
 };
 
 const getMonthName = (monthIndex: number): string => {
-    const names = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "GIMME", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+    const names = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
     return names[monthIndex % 12];
 }
 

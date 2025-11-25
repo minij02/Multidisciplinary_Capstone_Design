@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import OnboardingPage from './pages/OnboardingPage';
 import MainPage from './pages/MainPage';
+import DiaryPage from './pages/DiaryPage';
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
         path: "main",
         element: <MainPage />,
       },
+      {
+        path: "diary",
+        element: <DiaryPage />,
+      },
     ],
   },
 ]);
