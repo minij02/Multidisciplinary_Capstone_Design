@@ -1,12 +1,18 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.dto.LoginRequest;
+import com.example.capstone.dto.LoginResponse;
 import com.example.capstone.dto.RegisterRequest;
+import com.example.capstone.dto.ResetPasswordRequest;
 import com.example.capstone.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -57,4 +63,30 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * [Create New Password Step] 인증 후 최종적으로 비밀번호를 재설정합니다.
+     * POST /api/auth/reset-password
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return new ResponseEntity<>("비밀번호 재설정이 완료되었습니다. 새로 로그인해주세요.", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // 새 비밀번호 불일치, 인증 코드 오류, 만료 등
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PostMapping("/login")
+public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    try {
+        LoginResponse response = authService.login(request); // 서비스 레이어 호출
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (IllegalArgumentException e) {
+        Map<String, String> errorResponse = Map.of("message", e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+}
 }

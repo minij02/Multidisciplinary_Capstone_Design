@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // 기본 설정
+    "target": "es2020", // ECMAScript 2020 버전으로 컴파일
+    "useDefineForClassFields": true,
+    "lib": ["es2020", "dom", "dom.iterable"], // 사용할 라이브러리 목록
+    "module": "esnext", // 모듈 시스템: ES Modules 사용
+    "skipLibCheck": true,
+
+    // 모듈 해석 설정
+    "moduleResolution": "bundler", // Vite와 같은 번들러를 사용할 때 권장되는 설정
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true, // 단일 파일 변환을 위한 모듈 격리
+    "noEmit": true, // Vite가 빌드를 처리하므로 TypeScript 컴파일러가 .js 파일을 생성하지 않음
+    
+    // JSX 및 React 설정
+    "jsx": "react-jsx", // React 17 이후의 새로운 JSX 변환 방식 사용
+
+    // 타입 검사 설정
+    "strict": true, // 엄격한 타입 검사 활성화
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
