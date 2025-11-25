@@ -1,0 +1,113 @@
+/* --- 공통 레이아웃 스타일 --- */
+.onboarding-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px; /* p-6 */
+}
+
+/* --- 헤더 및 버튼 스타일 --- */
+.header-btn {
+    color: #4b5563; /* text-gray-600 */
+    padding: 4px; /* p-1 */
+    border-radius: 9999px; /* rounded-full */
+    transition: background-color 0.15s;
+}
+.header-btn:hover {
+    background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+/* --- 페이지 인디케이터 스타일 --- */
+.indicator-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px; /* mt-4 */
+    margin-bottom: 32px; /* mb-8 */
+}
+.indicator-dot {
+    height: 8px; /* h-2 */
+    width: 8px; /* w-2 */
+    border-radius: 9999px; /* rounded-full */
+    margin-left: 4px; /* mx-1 */
+    margin-right: 4px;
+    background-color: #d1d5db; /* bg-gray-300 */
+    transition: background-color 0.3s;
+}
+.indicator-dot.active {
+    background-color: #1f2937; /* bg-gray-800 */
+}
+
+/* --- 버튼 스타일 --- */
+.footer-container {
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px; /* pt-4 */
+    border-top: 1px solid #f3f4f6; /* border-t border-gray-100 */
+    flex-shrink: 0;
+}
+/* 기본 버튼 스타일 (공통) */
+.btn-common {
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    background-color: white; /* 흰색 배경 */
+}
+
+/* 활성화 상태 (이전/다음 모두 해당) */
+.btn-pill:not(.disabled) {
+    color: #b57a84; /* 분홍색 텍스트 (이미지 텍스트색) */
+    border-color: #e5e7eb; /* 얇은 테두리색 */
+}
+
+.btn-pill:not(.disabled):hover {
+    background-color: #fcfcfc; /* 호버 시 아주 살짝 어둡게 */
+    border-color: #d1d5db; /* 호버 시 테두리도 약간 진하게 */
+}
+
+/* 비활성화 상태 (이전/다음 모두 해당) */
+.btn-pill.disabled {
+    background-color: #fcfcfc; /* 배경은 거의 흰색 유지 */
+    color: #d1d5db; /* 텍스트는 희미하게 */
+    border-color: #f3f4f6; /* 테두리도 희미하게 */
+    cursor: not-allowed;
+}
+
+/* 기타 레이아웃 관련 스타일 */
+.footer-container {
+    padding: 1rem 1rem 2rem 1rem;
+}
+
+/* --- 입력 필드 공통 스타일 (Input/Textarea) --- */
+.input-common {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db; /* border-gray-300 */
+    border-radius: 8px;
+    box-sizing: border-box; /* 패딩이 너비를 초과하지 않도록 설정 */
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-common:focus {
+    border-color: #3b82f6; /* focus:border-blue-500 */
+    box-shadow: 0 0 0 1px #3b82f6; /* focus:ring-blue-500 */
+    outline: none;
+}
+.textarea-resize-none {
+    resize: none;
+}
+
+/* --- 선택 버튼 스타일 --- */
+.theme-btn {
+    width: 100%;
+    padding: 16px; /* p-4 */
+    border-radius: 8px; /* rounded-lg */
+    border: 1px solid #d1d5db;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    background-color: white;
+    color: #374151;
+}
+.theme-btn.selected {
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: white;
+    border-color: #3b82f6;
+}
+.theme-btn:hover:not(.selected) {
+    background-color: #f9fafb; /* hover:bg-gray-50 */
+}
