@@ -1,0 +1,395 @@
+/* --- DiaryWrite.css 파일의 모든 내용을 이것으로 교체하세요 --- */
+
+#calendar-portal-root {
+  position: relative;
+  z-index: 1000;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.diary-write-page {
+  width: 375px;
+  min-height: 812px;
+  background-color: #f4f4f8;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background-color: #f4f4f8;
+  flex-shrink: 0;
+}
+.diary-header h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+.diary-header .icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.diary-content {
+  flex: 1;
+  padding: 0 20px;
+  overflow-y: auto;
+}
+.input-base {
+  background: #ffffff;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-base:focus,
+.input-base:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #aab9d4;
+}
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.title-section {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.image-uploader {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  font-size: 0.8rem;
+  color: #888;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.image-uploader .image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.image-uploader .upload-icon {
+  font-size: 2.5rem;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+.title-input-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.title-input-wrapper label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.title-input-wrapper .input-base {
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+}
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.date-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.date-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 120px;
+}
+.airplane-icon-wrapper {
+  color: #4a90e2;
+  font-size: 1.2rem;
+  background-color: #eef5ff;
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.react-datepicker-wrapper {
+  width: 100%;
+}
+.date-picker-input {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  border: none;
+  background: #f0f2f5;
+  border-radius: 8px;
+  padding: 8px 0;
+  text-align: center; /* ★ 1. 날짜 중앙 정렬 */
+  width: 100%;
+  cursor: pointer;
+}
+.date-picker-input:focus {
+  outline: none;
+}
+
+/* ★★★ (핵심 수정) 캘린더 팝업 스타일 ★★★ */
+.react-datepicker-popper {
+  z-index: 1001 !important;
+}
+.react-datepicker {
+  width: 280px !important;
+  border: 1px solid #ddd !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 15px !important;
+  font-size: 0.8rem !important;
+  background: white !important;
+}
+.react-datepicker__header {
+  background-color: #aab9d4 !important;
+  color: white !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  padding: 10px !important;
+  border-bottom: none !important;
+  width:261px;
+}
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+}
+.react-datepicker__navigation {
+  top: 4px !important;
+}
+.react-datepicker__navigation-icon::before {
+  border-color: white !important;
+  border-width: 2px 2px 0 0 !important;
+}
+.react-datepicker__month {
+  margin: 5px !important;
+}
+.react-datepicker__day {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  margin: 2px !important;
+}
+.react-datepicker__day--selected {
+  background-color: #aab9d4 !important;
+  color: white !important;
+  border-radius: 50% !important;
+}
+.react-datepicker__day--keyboard-selected {
+  background-color: #eef5ff !important;
+  color: #333 !important;
+  border-radius: 50% !important;
+}
+.react-datepicker__day:hover {
+  background-color: #eef5ff !important;
+  border-radius: 50% !important;
+}
+.react-datepicker__day--outside-month {
+  color: #ccc !important;
+}
+
+/* ★ 1. 도시 입력창 중앙 정렬 */
+.city-input {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center; /* ★ 1. 도시 중앙 정렬 */
+  width: 100%;
+  padding: 12px 10px;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+.city-input::placeholder {
+  color: #ccc;
+  font-weight: 500;
+  text-align: center; /* ★ 1. placeholder 중앙 정렬 */
+}
+
+/* 2-3. 일기 내용 입력 */
+.content-section {
+  padding: 14px;
+  position: relative;
+}
+.diary-textarea {
+  width: 86%;
+  height: 150px;
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  background: #eef5ff;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+.diary-textarea::placeholder {
+  color: #5f8ac5;
+}
+
+/* 2-4. 여행 요약 */
+.summary-section-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.summary-row label {
+  font-size: 1rem;
+  font-weight: 600;
+  flex-basis: 70px;
+  color: #333;
+}
+.duration-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: flex-end; /* ★ 2. '당일치기'가 사라졌으니 오른쪽 정렬 */
+}
+/* ★ 2. '당일치기' CSS 삭제 */
+.nights-days-inputs {
+  display: flex;
+  align-items: center;
+}
+.nights-days-inputs .input-base {
+  width: 45px;
+  margin: 0 5px;
+  padding: 8px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.nights-days-inputs span {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* 5. 경비 그룹 */
+.cost-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.cost-group .input-base {
+  flex: 1;
+  text-align: right;
+  font-weight: 600;
+  padding-right: 10px;
+  font-size: 1.1rem;
+}
+.cost-group span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+/* 2-5. 음성 작성 버튼 */
+.voice-button {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 30px;
+  background-color: #aab9d4;
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.2s;
+  position: relative;
+}
+.voice-button:hover {
+  background-color: #93a2c0;
+}
+
+/* 3. 하단 네비게이션 바 */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ffffff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 10px 0;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  position: relative;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #aaa;
+  cursor: pointer;
+}
+.nav-item .nav-icon {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+.nav-item.active {
+  color: #4a90e2;
+}
+.nav-item.active .nav-icon-home {
+  background: #aab9d4;
+  border-radius: 50%;
+  color: white;
+  font-size: 2.2rem;
+  padding: 14px;
+  transform: translateY(-25px);
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  border: 5px solid #f4f4f8;
+}
+.nav-item.active span {
+  transform: translateY(-15px);
+}
+

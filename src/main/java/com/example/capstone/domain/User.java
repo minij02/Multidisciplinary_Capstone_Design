@@ -49,4 +49,10 @@ public class User {
     // 1:N 관계: 온보딩 질문 목록
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OnboardingQuestion> onboardingQuestions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TripChapter> tripChapters = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> chatMessages = new ArrayList<>();
 }
