@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import OnboardingPage from './pages/OnboardingPage';
+import MainPage from './pages/MainPage';
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
         path: "onboarding",
         element: <OnboardingPage />,
       },
+      {
+        path: "main",
+        element: <MainPage />,
+      },
     ],
   },
 ]);
