@@ -1,7 +1,7 @@
 package com.example.capstone.repository;
 
 import com.example.capstone.domain.ChatMessage;
-import com.example.capstone.domain.DailyEntry; // DailyEntry 사용
+import com.example.capstone.domain.DiaryEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +15,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
      * 필드명 'diaryEntry'에 대한 쿼리입니다.
      */
     // 💡 DiaryService에서 호출: chatMessageRepository.findByDiaryEntry(entry);
-    List<ChatMessage> findByDiaryEntry(DailyEntry diaryEntry);
+   List<ChatMessage> findByDiaryEntry(DiaryEntry diaryEntry);
 }

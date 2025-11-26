@@ -4,12 +4,16 @@ import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.domain.TripChapter;
 import com.example.capstone.dto.ChatMessageRequest;
 import com.example.capstone.dto.DiaryCreateRequest;
+import com.example.capstone.dto.DiaryDetailResponse;
+import com.example.capstone.security.PrincipalDetails;
 import com.example.capstone.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 
@@ -78,6 +82,33 @@ public class DiaryController {
             log.error("AI 분석 실패 (Exception): diaryEntryId={}, error={}", diaryEntryId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "AI 분석 중 서버 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 4. 일기 상세 조회
+     * GET /api/diary/{entryId}
+     * (인증 및 인가 체크 필요)
+     */
+    @GetMapping("/{entryId}")
+    public ResponseEntity<DiaryDetailResponse> getDiaryDetail(
+            @PathVariable Long entryId, 
+            Authentication authentication
+    ) {
+        // 1. 인증된 사용자 ID 획득 (PrincipalDetails를 통해 사용자 ID 추출)
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long userId = principalDetails.getUser().getUserId();
+        
+        try {
+            // 2. 서비스 호출 (내부에서 인가 체크 수행)
+            DiaryDetailResponse response = diaryService.getDiaryDetail(entryId, userId);
+            
+            // 3. 성공 응답
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            
+        } catch (IllegalArgumentException e) {
+            // 일기를 찾을 수 없거나 접근 권한이 없을 경우 (403 Forbidden)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         }
     }
 }

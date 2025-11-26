@@ -91,7 +91,7 @@ const DiaryWrite: React.FC = () => {
     try {
       // 2. (API 호출 #1) Spring Boot에 챕터 생성을 요청
       // (package.json의 "proxy" 설정 덕분에 '/api'로 바로 호출)
-      const response = await axios.post('/api/diary/chapter', diaryData);
+      const response = await axios.post('http://localhost:8080/api/diary/chapter', diaryData);
 
       // 3. 백엔드가 생성한 '일기 항목 ID' (diaryEntryId)를 받음
       const diaryEntryId = response.data; // (Controller가 Long ID를 반환)
