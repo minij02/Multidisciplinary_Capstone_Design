@@ -63,6 +63,6 @@ public class DailyEntry {
 
     // 생성 방식 ENUM 정의
     public enum CreatedMethod {
-        TEXT, VOICE_CHAT
+        TEXT, VOICE_CHAT, AI_GENERATED_CHAT
     }
 }
