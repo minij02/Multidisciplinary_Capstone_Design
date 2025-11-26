@@ -1,0 +1,18 @@
+/* OnboardingStep2.css */
+
+/* --- 글자 수 표시 스타일 --- */
+.character-count {
+    /* 기존: text-xs text-gray-500 text-right */
+    font-size: 12px; /* text-xs */
+    color: #6b7280; /* text-gray-500 */
+    text-align: right; /* text-right */
+    /* onboarding-content-inner가 gap을 관리하므로 별도의 margin은 필요 없음 */
+}
+
+/* * NOTE: 
+ * input-common (border, padding, background 등)
+ * textarea-resize-none (resize: none)
+ * onboarding-content-inner (flex-col, gap)
+ * 와 같은 스타일은 공통 CSS 파일(예: Onboarding.css 또는 OnboardingLayout.css)에
+ * 정의되어 있음을 가정합니다.
+ */

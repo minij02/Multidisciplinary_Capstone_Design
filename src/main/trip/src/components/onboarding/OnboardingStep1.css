@@ -58,7 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px; 
-    margin-top: 32px;
+    margin-top: 32px; /* 제목/부제목과의 간격 유지 */
 }
 
 /* ---------------------------------------------------------------------- */
@@ -163,4 +163,88 @@
     width: 100%;
     max-width: 27.48%; 
     z-index: 5;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 5. 입력 필드 공통 스타일 (Step 1의 input-field 스타일을 input-common으로 병합) */
+/* ---------------------------------------------------------------------- */
+
+.input-common, .input-field {
+    width: 100%;
+    box-sizing: border-box; 
+    
+    /* p-3 = 12px */
+    padding: 12px; 
+    
+    /* 🚨 수정: min-height 추가하여 입력 필드가 flex 레이아웃 내에서 사라지는 현상 방지 */
+    min-height: 48px; 
+    flex-shrink: 0; /* 내용 압축 방지 */
+    
+    /* border-[#d5d4dc] */
+    border: 1px solid #d5d4dc; 
+    
+    /* rounded-lg = 8px */
+    border-radius: 8px; 
+    background-color: white;
+    
+    font-family: 'Helvetica', sans-serif;
+    font-size: 16px; 
+    color: #10002e; 
+    
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input-common:focus, .input-field:focus {
+    outline: none;
+    /* Anima의 활성 색상과 유사하게 설정 */
+    border-color: #f6a2a4; 
+    box-shadow: 0 0 0 1px #f6a2a4; 
+}
+
+/* 플레이스홀더 색상 설정 */
+.input-common::placeholder, .input-field::placeholder {
+    color: #8b849b; 
+    opacity: 1; 
+}
+
+.textarea-resize-none {
+    resize: none;
+}
+
+/* --- 선택 버튼 스타일 (기존 유지) --- */
+.theme-btn {
+    width: 100%;
+    padding: 16px; 
+    border-radius: 8px; 
+    border: 1px solid #d1d5db;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    background-color: white;
+    color: #374151;
+}
+.theme-btn.selected {
+    background-color: #3b82f6; 
+    color: white;
+    border-color: #3b82f6;
+}
+.theme-btn:hover:not(.selected) {
+    background-color: #f9fafb; 
+}
+
+/* --- 스텝 1 전용 (날짜 입력 그룹) --- */
+.date-group {
+    display: flex;
+    gap: 16px; 
+    width: 100%;
+}
+
+.date-input {
+    width: 50%;
+    text-align: center;
+}
+
+/* --- 스텝 2 전용 (글자 수) --- */
+.character-count {
+    font-size: 12px; 
+    color: #6b7280; 
+    text-align: right; 
 }

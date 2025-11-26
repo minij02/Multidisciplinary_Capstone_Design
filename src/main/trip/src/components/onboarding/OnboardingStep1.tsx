@@ -1,6 +1,7 @@
 import React from 'react';
 import OnboardingLayout from '../../layouts/OnboardingLayout';
 import { OnboardingData } from '../../pages/OnboardingPage';
+import './OnboardingStep1.css'; // 👈 새로 정의할 CSS 파일을 임포트합니다.
 
 interface StepProps {
   data: OnboardingData; 
@@ -31,33 +32,35 @@ const OnboardingStep1: React.FC<StepProps> = ({ data, updateData, handleNext, is
       isNextDisabled={isNextDisabled}
       showNextButton={true}
     >
-      <div className="flex flex-col space-y-4 h-full pt-8">
+      <div className="onboarding-step1-content">
         
         {/* 도시/국가 입력 */}
-        <div className="w-full">
+        <div className="input-container">
           <input
             type="text"
             placeholder="여행지(도시/국가) 입력하세요"
             value={data.city}
             onChange={handleCityChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className="input-field"
           />
         </div>
 
         {/* 날짜 입력 */}
-        <div className="w-full">
-          <div className="flex space-x-4">
+        <div className="input-container">
+          <div className="date-group">
             <input
               type="date"
               value={data.startDate || ''}
               onChange={(e) => handleDateChange('startDate', e)}
-              className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-center"
+              className="input-field date-input"
+              placeholder="시작일"
             />
-             <input
+            <input
               type="date"
               value={data.endDate || ''}
               onChange={(e) => handleDateChange('endDate', e)}
-              className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-center"
+              className="input-field date-input"
+              placeholder="종료일"
             />
           </div>
         </div>
