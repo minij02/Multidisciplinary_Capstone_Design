@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Send, BookOpen, Search, Home, Loader2, Clock, Edit2 } from 'lucide-react';
+import './DiaryPage.css'; // 👈 새로 정의할 CSS 파일 임포트
 
 // ====================================================================
 // 1. 프론트엔드용 DTO 인터페이스 정의
@@ -51,13 +52,40 @@ const formatTimeAgo = (isoString: string): string => {
 
 
 const DiaryPage: React.FC = () => {
-    const [chapters, setChapters] = useState<ChapterList[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [chapters, setChapters] = useState<ChapterList[]>([
+        // ******************** Mock Data for UI Testing ********************
+        {
+            chapterId: 1,
+            title: "낯선 공기와 설렘, 도쿄 3박 4일",
+            coverImageUrl: "",
+            travelPeriod: "2024.10.15 ~ 2024.10.18",
+            entries: [
+                { entryId: 101, subtitle: "도쿄 하네다 공항 도착, 설레는 첫날", createdTime: new Date(Date.now() - 3600000).toISOString() },
+                { entryId: 102, subtitle: "시부야 스크램블 교차로와 맛집 탐방", createdTime: new Date(Date.now() - 7200000).toISOString() },
+                { entryId: 103, subtitle: "아직 작성하지 않은 일기 항목", createdTime: new Date(Date.now() - 10800000).toISOString() },
+            ]
+        },
+        {
+            chapterId: 2,
+            title: "제주도 푸른 밤, 가족과 함께 2박 3일",
+            coverImageUrl: "",
+            travelPeriod: "2024.08.01 ~ 2024.08.03",
+            entries: [
+                { entryId: 201, subtitle: "함덕 해변의 잔잔한 파도 소리", createdTime: new Date(Date.now() - 86400000 * 30).toISOString() },
+                { entryId: 202, subtitle: "오름 등반, 땀 흘린 보람이 있던 날", createdTime: new Date(Date.now() - 86400000 * 32).toISOString() },
+            ]
+        }
+        // ******************************************************************
+    ]);
+    const [loading, setLoading] = useState(false); // Mock data 사용 시 false
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     // API 호출 로직을 useCallback으로 감싸 안정성 확보
     const fetchChapterList = useCallback(async (): Promise<ChapterList[]> => {
+        // ... (API 호출 로직은 이전과 동일) ...
+        // 실제 API 연동 시 이 함수를 주석 해제하고, Mock data를 제거해야 합니다.
+        
         const token = localStorage.getItem('accessToken');
         
         if (!token) {
@@ -100,14 +128,13 @@ const DiaryPage: React.FC = () => {
                 }
             }
         }
-        // 이 코드는 보통 도달하지 않지만, 타입 안전성을 위해 추가
         throw new Error("알 수 없는 API 호출 오류");
-    }, []); // 의존성 없음
+    }, []); 
 
-    // ====================================================================
-    // 3. 데이터 로딩 이펙트
-    // ====================================================================
+    // --- 데이터 로딩 이펙트 ---
     useEffect(() => {
+        // Mock data를 사용하므로 실제 API 호출은 주석 처리
+        /*
         const loadData = async () => {
             setLoading(true);
             setError(null);
@@ -117,11 +144,8 @@ const DiaryPage: React.FC = () => {
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.";
                 setError(errorMessage);
-                
-                // 401 오류 시 로그인 페이지로 리디렉션
                 if (errorMessage.includes("AUTH_REQUIRED") || errorMessage.includes("AUTH_EXPIRED")) {
                     console.log("인증 실패, 로그인 페이지로 이동");
-                    // 실제 라우터 사용 시 navigate('/login') 주석 해제
                     // navigate('/login'); 
                 }
             } finally {
@@ -129,6 +153,7 @@ const DiaryPage: React.FC = () => {
             }
         };
         loadData();
+        */
     }, [fetchChapterList, navigate]);
 
 
@@ -137,19 +162,19 @@ const DiaryPage: React.FC = () => {
     // ====================================================================
 
     const renderLoading = () => (
-        <div className="flex items-center justify-center h-full min-h-[50vh] text-pink-500">
-            <Loader2 className="h-8 w-8 animate-spin mr-2" />
-            <p>이야기를 불러오는 중...</p>
+        <div className="loading-container">
+            <Loader2 className="loader-icon" size={40} />
+            <p className="loading-text">이야기를 불러오는 중...</p>
         </div>
     );
 
     const renderError = () => (
-        <div className="p-4 text-center bg-red-100 text-red-700 border border-red-400 rounded-lg m-4">
-            <p className="font-bold">데이터 로드 오류:</p>
-            <p>{error}</p>
+        <div className="error-container">
+            <p className="error-title">데이터 로드 오류:</p>
+            <p className="error-message">{error}</p>
             <button 
                 onClick={() => navigate('/login')}
-                className="mt-3 px-4 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition"
+                className="login-button"
             >
                 다시 로그인하기
             </button>
@@ -166,74 +191,70 @@ const DiaryPage: React.FC = () => {
     // 5. 메인 UI 렌더링
     // ====================================================================
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center">
+        <div className="diary-page-container">
             {/* 1. 상단 헤더 */}
-            <header className="w-full max-w-md flex flex-col p-4 pt-10 sticky top-0 bg-white z-10 shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-gray-600">또 와주셔서 감사해요. 여행자님.</p>
-                    <User className="text-gray-600 cursor-pointer" size={24} />
+            <header className="header-area">
+                <div className="header-top-bar">
+                    <p className="header-greeting">또 와주셔서 감사해요. 여행자님.</p>
+                    <User className="nav-icon" size={24} />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">
+                <h1 className="header-title">
                     당신의 이야기가 궁금해요.
-                    <BookOpen className="inline ml-1 text-pink-500" size={24} />
+                    <BookOpen className="header-title-icon" size={24} />
                 </h1>
             </header>
 
             {/* 2. 현재 진행중인 챕터 카드 */}
             {currentChapter && (
-                <div className="w-full max-w-md px-4 mb-8">
-                    <div className="p-4 bg-blue-50 rounded-xl shadow-lg relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-20">
-                            {/* 
-
-[Image of minimalistic globe and geometric shapes]
- */}
+                <div className="current-chapter-wrapper">
+                    <div className="current-chapter-card">
+                        <div className="chapter-card-bg-effect">
+                             {/* 미니멀한 지구본/기하학적 도형 이미지를 CSS로 표현하거나 인라인 SVG를 사용 */}
                         </div>
-                        <p className="text-sm text-gray-600 relative z-10">현재 진행하고 있는 챕터</p>
-                        <div className="flex justify-between items-center mt-2 relative z-10">
-                            <h2 className="text-lg font-semibold text-gray-800">
+                        <p className="chapter-subtitle">현재 진행하고 있는 챕터</p>
+                        <div className="chapter-card-content">
+                            <h2 className="chapter-title">
                                 Chapter 1: {currentChapter.title}
                             </h2>
-                            <Send className="text-pink-500 cursor-pointer" size={20} />
+                            <Send className="card-action-icon" size={20} />
                         </div>
                     </div>
                 </div>
             )}
 
             {/* 3. 전체 챕터 및 일기 목록 타임라인 */}
-            <main className="w-full max-w-md px-4 space-y-8">
+            <main className="timeline-main">
                 {chapters.map((chapter, index) => (
-                    <div key={chapter.chapterId} className="relative pb-8">
+                    <div key={chapter.chapterId} className="timeline-chapter-group">
                         {/* 챕터 타이틀 */}
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 ml-4">
+                        <h2 className="chapter-group-title">
                             Chapter {index + 1}: {chapter.title}
+                            <span className="travel-period">{chapter.travelPeriod}</span>
                         </h2>
 
                         {/* 일기 항목 목록 (타임라인) */}
-                        <div className="relative">
+                        <div className="timeline-entries-container">
                             {/* 타임라인 선 */}
-                            <div className="absolute left-[30px] top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                            <div className="timeline-line"></div>
 
                             {chapter.entries.map((entry, entryIndex) => (
-                                <div key={entry.entryId} className="flex items-start mb-6">
+                                <div key={entry.entryId} className="timeline-entry">
                                     {/* 점 */}
-                                    <div className="relative z-10 w-4 h-4 rounded-full bg-white border-2 border-gray-400 mt-2 flex-shrink-0 ml-[23px]"></div>
+                                    <div className="timeline-dot"></div>
 
                                     {/* 일기 카드 */}
-                                    <div className="flex-1 ml-6 p-4 bg-white rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                                        <h3 className="text-base font-semibold text-gray-800">
-                                            chapter {index + 1}.{entryIndex + 1}
+                                    <div className="entry-card">
+                                        <h3 className="entry-title">
+                                            Chapter {index + 1}.{entryIndex + 1}
                                         </h3>
-                                        {/* 이미지의 '놀러와서 일기 작성하기' 부분을 모방 */}
-                                        <p className="text-gray-600 mt-1">{entry.subtitle}</p>
+                                        <p className="entry-subtitle">{entry.subtitle}</p>
                                         
-                                        <div className="flex items-center text-xs text-gray-400 mt-2">
-                                            {/* 이미지에서 '36 minutes ago' 형식으로 표시된 부분을 구현 */}
-                                            <Clock size={12} className="mr-1" />
+                                        <div className="entry-meta">
+                                            <Clock size={12} className="entry-meta-icon" />
                                             <span>{formatTimeAgo(entry.createdTime)}</span>
                                             
-                                            {/* 이미지처럼 펜 모양 아이콘 추가 */}
-                                            {entry.subtitle.includes("작성하기") && <Edit2 size={12} className="ml-3" />}
+                                            {/* '작성하기' 항목에만 펜 모양 아이콘 추가 */}
+                                            {entry.subtitle.includes("작성하지 않은") && <Edit2 size={12} className="entry-meta-icon edit-icon" />}
                                         </div>
                                     </div>
                                 </div>
@@ -241,24 +262,26 @@ const DiaryPage: React.FC = () => {
                         </div>
                     </div>
                 ))}
-
             </main>
 
-            {/* 4. 하단 네비게이션 */}
-            <footer className="fixed bottom-0 w-full max-w-md bg-white shadow-2xl rounded-t-xl border-t border-gray-100">
-                <div className="flex justify-around items-center h-16">
-                    <div className="flex flex-col items-center text-sm text-pink-600 cursor-pointer transition-colors">
+            {/* 4. 하단 네비게이션 (MainPage에서 사용한 스타일 재활용) */}
+            <footer className="bottom-nav-footer">
+                <div className="nav-group">
+                    {/* 일기 페이지 (활성화) */}
+                    <div className="nav-item nav-item-active">
                         <BookOpen size={24} />
                         <span>일기페이지</span>
                     </div>
                     
-                    <div className="transform -translate-y-4" onClick={() => navigate('/main')}>
-                        <div className="bg-pink-500 p-3 rounded-full shadow-lg cursor-pointer hover:bg-pink-600 transition-colors">
-                            <Home size={32} className="text-white" />
+                    {/* 홈 버튼 (가운데 큰 버튼) */}
+                    <div className="nav-item-center" onClick={() => navigate('/main')}>
+                        <div className="home-button-bubble">
+                            <Home size={32} className="home-icon" />
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center text-sm text-gray-500 cursor-pointer hover:text-pink-500 transition-colors" onClick={() => console.log('마이페이지 이동')}>
+                    {/* 마이 페이지 */}
+                    <div className="nav-item" onClick={() => console.log('마이페이지 이동')}>
                         <Search size={24} />
                         <span>마이페이지</span>
                     </div>

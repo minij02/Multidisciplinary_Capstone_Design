@@ -1,0 +1,351 @@
+/* ---------------------------------------------------------------------- */
+/* Global Reset and Layout */
+/* ---------------------------------------------------------------------- */
+.diary-page-container {
+    min-height: 100vh;
+    background-color: white; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 80px; /* 푸터 높이 + 여백 */
+    font-family: 'Inter', sans-serif;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 1. Header Area */
+/* ---------------------------------------------------------------------- */
+.header-area {
+    width: 100%;
+    max-width: 448px; /* max-w-md */
+    display: flex;
+    flex-direction: column;
+    padding: 16px; /* p-4 */
+    padding-top: 40px; /* pt-10 */
+    background-color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    box-sizing: border-box;
+}
+
+.header-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px; /* mb-4 */
+}
+
+.header-greeting {
+    color: #4b5563; /* text-gray-600 */
+}
+
+.nav-icon {
+    color: #4b5563;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 24px; /* text-2xl */
+    font-weight: bold;
+    color: #1f2937; /* text-gray-800 */
+    margin-bottom: 24px; /* mb-6 */
+}
+
+.header-title-icon {
+    display: inline;
+    margin-left: 4px; /* ml-1 */
+    color: #ec4899; /* text-pink-500 */
+    vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 2. Current Chapter Card */
+/* ---------------------------------------------------------------------- */
+.current-chapter-wrapper {
+    width: 100%;
+    max-width: 448px;
+    padding: 0 16px; /* px-4 */
+    margin-bottom: 32px; /* mb-8 */
+    box-sizing: border-box;
+}
+
+.current-chapter-card {
+    padding: 16px; /* p-4 */
+    background-color: #eff6ff; /* bg-blue-50 */
+    border-radius: 12px; /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    position: relative;
+    overflow: hidden;
+}
+
+.chapter-subtitle {
+    font-size: 14px; /* text-sm */
+    color: #4b5563; /* text-gray-600 */
+    position: relative;
+    z-index: 10;
+}
+
+.chapter-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px; /* mt-2 */
+    position: relative;
+    z-index: 10;
+}
+
+.chapter-title {
+    font-size: 18px; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    color: #1f2937;
+}
+
+.card-action-icon {
+    color: #ec4899; /* text-pink-500 */
+    cursor: pointer;
+}
+
+/* Background effect for the card */
+.chapter-card-bg-effect {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+    /* Placeholder for the geometric shapes image/SVG */
+    background-image: url('https://placehold.co/400x150/e0f2fe/3b82f6?text=Background+Pattern');
+    background-size: cover;
+}
+
+
+/* ---------------------------------------------------------------------- */
+/* 3. Timeline (Chapter & Entry List) */
+/* ---------------------------------------------------------------------- */
+.timeline-main {
+    width: 100%;
+    max-width: 448px;
+    padding: 0 16px; /* px-4 */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 32px; /* space-y-8 */
+}
+
+.timeline-chapter-group {
+    position: relative;
+    padding-bottom: 32px; /* pb-8 */
+}
+
+.chapter-group-title {
+    font-size: 20px; /* text-xl */
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 16px; /* mb-4 */
+    margin-left: 16px; /* ml-4 */
+    display: flex;
+    flex-direction: column;
+}
+
+.travel-period {
+    font-size: 14px;
+    font-weight: normal;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.timeline-entries-container {
+    position: relative;
+}
+
+/* 타임라인 선 (Vertical Line) */
+.timeline-line {
+    position: absolute;
+    left: 30px; /* ml-[23px] + dot half width */
+    top: 0;
+    bottom: 0;
+    width: 2px; /* w-0.5 */
+    background-color: #e5e7eb; /* bg-gray-200 */
+}
+
+.timeline-entry {
+    display: flex;
+    align-items: flex-start; /* items-start */
+    margin-bottom: 24px; /* mb-6 */
+}
+
+/* 타임라인 점 (Dot) */
+.timeline-dot {
+    position: relative;
+    z-index: 10;
+    width: 16px; /* w-4 */
+    height: 16px; /* h-4 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: white;
+    border: 2px solid #9ca3af; /* border-gray-400 */
+    margin-top: 8px; /* mt-2 */
+    flex-shrink: 0;
+    margin-left: 23px; /* ml-[23px] to align with line */
+}
+
+/* 일기 카드 */
+.entry-card {
+    flex: 1; /* flex-1 */
+    margin-left: 24px; /* ml-6 */
+    padding: 16px; /* p-4 */
+    background-color: white;
+    border-radius: 8px; /* rounded-lg */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
+    border: 1px solid #f3f4f6; /* border-gray-100 */
+    transition: box-shadow 0.2s;
+}
+
+.entry-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* hover:shadow-lg */
+}
+
+.entry-title {
+    font-size: 16px; /* text-base */
+    font-weight: 600; /* font-semibold */
+    color: #1f2937;
+}
+
+.entry-subtitle {
+    color: #4b5563; /* text-gray-600 */
+    margin-top: 4px; /* mt-1 */
+}
+
+.entry-meta {
+    display: flex;
+    align-items: center;
+    font-size: 12px; /* text-xs */
+    color: #9ca3af; /* text-gray-400 */
+    margin-top: 8px; /* mt-2 */
+}
+
+.entry-meta-icon {
+    margin-right: 4px; /* mr-1 */
+}
+
+.edit-icon {
+    margin-left: 12px; /* ml-3 */
+}
+
+/* ---------------------------------------------------------------------- */
+/* 4. Bottom Navigation (Reused from MainPage CSS) */
+/* ---------------------------------------------------------------------- */
+.bottom-nav-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 448px;
+    background-color: white;
+    box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1); /* shadow-2xl */
+    border-top-left-radius: 12px; 
+    border-top-right-radius: 12px;
+    border-top: 1px solid #f3f4f6;
+    z-index: 20;
+}
+
+.nav-group {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 64px; /* h-16 */
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px; 
+    color: #6b7280; /* text-gray-500 */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.nav-item:hover {
+    color: #ec4899; /* hover:text-pink-500 */
+}
+
+.nav-item-active {
+    color: #db2777; /* text-pink-600 (Active state) */
+}
+
+.nav-item-center {
+    transform: translateY(-16px); /* -translate-y-4 */
+    cursor: pointer;
+}
+
+.home-button-bubble {
+    background-color: #ec4899; 
+    padding: 12px; 
+    border-radius: 9999px;
+    box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.3), 0 4px 6px -2px rgba(236, 72, 153, 0.2); 
+    transition: background-color 0.2s;
+}
+
+.home-button-bubble:hover {
+    background-color: #db2777; 
+}
+
+.home-icon {
+    color: white;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 5. Loading and Error States (Reused from MainPage CSS) */
+/* ---------------------------------------------------------------------- */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+.loader-icon {
+    color: #ec4899; 
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-left: 8px; 
+    color: #ec4899;
+}
+
+.error-container {
+    padding: 16px; 
+    text-align: center;
+    background-color: #fee2e2; 
+    color: #b91c1c; 
+    border: 1px solid #f87171; 
+    border-radius: 8px; 
+    margin: 16px auto; /* 중앙 정렬 */
+    max-width: 400px;
+}
+
+.error-title {
+    font-weight: bold;
+}
+
+.login-button {
+    margin-top: 12px; 
+    padding: 8px 16px; 
+    background-color: #ec4899;
+    color: white;
+    border-radius: 9999px; 
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #db2777; 
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

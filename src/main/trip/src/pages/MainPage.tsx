@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { User, ChevronLeft, ChevronRight, Home, Search, BookOpen, Clock } from 'lucide-react';
+import './MainPage.css'; // 👈 새로 정의할 CSS 파일 임포트
 
 // API 응답 DTO를 모방한 타입 정의
 interface MainPageResponse {
@@ -17,7 +18,6 @@ const API_MAX_RETRIES = 3;
 
 /**
  * 지수 백오프를 사용한 API 호출 및 재시도 로직
- * 401 오류 해결을 위해 Authorization 헤더에 토큰을 추가합니다.
  */
 const fetchMainPageData = async (): Promise<MainPageResponse> => {
     // 1. 저장된 토큰을 localStorage에서 가져온다고 가정 (실제 구현에 따라 다를 수 있음)
@@ -32,7 +32,6 @@ const fetchMainPageData = async (): Promise<MainPageResponse> => {
         // 토큰이 있다면 Authorization 헤더에 Bearer 토큰 형식으로 추가
         headers['Authorization'] = `Bearer ${token}`;
     } else {
-        // 토큰이 없으면 401 오류가 발생할 가능성이 높습니다.
         console.error("인증 토큰을 찾을 수 없습니다. 로그인 상태를 확인하세요.");
         throw new Error("인증되지 않은 사용자입니다. 로그인이 필요합니다.");
     }
@@ -92,6 +91,24 @@ const getMonthName = (monthIndex: number): string => {
     return names[monthIndex % 12];
 }
 
+// --- 로딩 아이콘 ---
+const Loader2 = ({ className = 'h-5 w-5', size = 24 }: { className?: string, size?: number }) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className={className}
+    >
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+);
+
 // --- 메인 컴포넌트 ---
 
 const MainPage: React.FC = () => {
@@ -123,9 +140,7 @@ const MainPage: React.FC = () => {
                 // err가 unknown 타입이므로 Error 인스턴스인지 확인
                 const errorMessage = err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.";
                 
-                // 401 오류 발생 시 로그인 페이지로 리디렉션 (예시)
                 if (errorMessage.includes("인증되지 않은 사용자입니다.") || errorMessage.includes("인증 토큰이 만료")) {
-                    // 실제 라우터 사용 시 navigate('/login') 등으로 대체
                     console.log("인증 실패, 로그인 페이지로 이동"); 
                     // navigate('/login'); 
                 }
@@ -145,7 +160,7 @@ const MainPage: React.FC = () => {
         
         // 빈 칸 채우기 (1일 전까지)
         for (let i = 0; i < startDay; i++) {
-            days.push(<div key={`empty-${i}`} className="p-2 text-center"></div>);
+            days.push(<div key={`empty-${i}`} className="calendar-day-cell empty"></div>);
         }
 
         // 날짜 채우기
@@ -153,23 +168,21 @@ const MainPage: React.FC = () => {
             const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const hasDiary = diaryDatesSet.has(dateString);
             
-            // 이미지처럼 일기가 작성된 날짜를 빨간색 배경의 동그라미로 강조
             const dayClass = hasDiary
-                ? 'bg-red-500 text-white rounded-full font-bold shadow-md'
-                : 'text-gray-800';
+                ? 'diary-day'
+                : 'normal-day';
             
-            // 날짜를 이미지처럼 중앙 정렬된 격자 셀에 배치
             days.push(
                 <div 
                     key={day} 
-                    className="flex items-center justify-center p-2 h-10 w-10 mx-auto transition duration-150 ease-in-out cursor-pointer"
+                    className="calendar-day-cell"
                 >
-                    <span className={`w-8 h-8 flex items-center justify-center text-sm ${dayClass}`}>
+                    <span className={`calendar-date-bubble ${dayClass}`}>
                         {day}
                     </span>
-                    {/* 이미지에 있는 아이콘 표시 (예시: L, 1, 19) - 실제 로직은 복잡하므로 간단한 플레이스홀더만 구현 */}
+                    {/* 이미지처럼 일기 작성 마커 표시 (플레이스홀더) */}
                     {hasDiary && day % 5 === 0 && (
-                         <Clock size={12} className="absolute bottom-0 right-0 text-red-700" />
+                            <Clock size={12} className="diary-marker" />
                     )}
                 </div>
             );
@@ -187,23 +200,21 @@ const MainPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full min-h-screen bg-gray-50">
-                <Loader2 className="h-10 w-10 text-pink-500 animate-spin" />
-                <p className="ml-2 text-pink-500">데이터를 불러오는 중...</p>
+            <div className="loading-container">
+                <Loader2 className="loader-icon" size={40} />
+                <p className="loading-text">데이터를 불러오는 중...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-4 text-center bg-red-100 text-red-700 border border-red-400 rounded-lg m-4">
-                <p className="font-bold">오류 발생:</p>
-                <p>{error}</p>
-                {/* 401 오류 시 로그인 유도 */}
+            <div className="error-container">
+                <p className="error-title">오류 발생:</p>
+                <p className="error-message">{error}</p>
                 {error.includes("인증") && (
                     <button 
-                        // 실제 라우터 사용 시 onClick={() => navigate('/login')}
-                        className="mt-3 px-4 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition"
+                        className="login-button"
                     >
                         로그인 페이지로 이동
                     </button>
@@ -218,82 +229,82 @@ const MainPage: React.FC = () => {
     const profileImageUrl = "https://placehold.co/100x100/fecaca/9f1239?text=DAHAKJE";
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-20 font-sans">
+        <div className="main-page-container">
             
             {/* 1. 상단 헤더 (네비게이션) */}
-            <header className="w-full flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-10">
-                <BookOpen className="text-gray-600 cursor-pointer" size={24} />
-                <h1 className="text-xl font-bold text-gray-800">메인페이지</h1>
-                <User className="text-gray-600 cursor-pointer" size={24} />
+            <header className="header-nav">
+                <BookOpen className="nav-icon" size={24} />
+                <h1 className="header-title">메인페이지</h1>
+                <User className="nav-icon" size={24} />
             </header>
 
             {/* 2. 메인 콘텐츠 영역 */}
-            <main className="w-full max-w-md p-4 space-y-6">
+            <main className="main-content">
 
                 {/* 프로필 카드 */}
-                <div className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-lg">
+                <div className="profile-card">
                     <img
                         src={profileImageUrl}
                         alt="User Profile"
-                        className="w-28 h-28 object-cover rounded-full border-4 border-pink-100 shadow-md"
+                        className="profile-image"
                         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
                              e.currentTarget.onerror = null; 
                              e.currentTarget.src = 'https://placehold.co/100x100/cccccc/333333?text=User'; 
                         }}
                     />
-                    <h2 className="mt-4 text-xl font-semibold text-gray-800">
+                    <h2 className="user-name">
                         {userName || "다학재"}'s Diary
                     </h2>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="user-info-detail">
                         00.00.01 여자
                     </p>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="user-motto">
                         나홀로 여행을 좋아해요
                     </p>
                 </div>
 
                 {/* 통계 카드 (All / Favorite) */}
-                <div className="flex w-full overflow-hidden rounded-xl shadow-lg h-24">
+                <div className="stats-card-group">
                     {/* All (전체 작성 일기 수) */}
-                    <div className="flex-1 flex flex-col items-center justify-center bg-blue-100/50 border-r border-dashed border-gray-300">
-                        <span className="text-3xl font-extrabold text-blue-800">{totalDiaryCount}</span>
-                        <span className="text-sm text-gray-600 mt-1">All</span>
+                    <div className="stat-card total-stat">
+                        <span className="stat-value">{totalDiaryCount}</span>
+                        <span className="stat-label">All</span>
                     </div>
                     {/* Favorite (좋아요 일기 수) */}
-                    <div className="flex-1 flex flex-col items-center justify-center bg-pink-100/50">
-                        <span className="text-3xl font-extrabold text-pink-700">{favoriteDiaryCount}</span>
-                        <span className="text-sm text-gray-600 mt-1">Favorite</span>
+                    <div className="stat-card favorite-stat">
+                        <span className="stat-value">{favoriteDiaryCount}</span>
+                        <span className="stat-label">Favorite</span>
                     </div>
                 </div>
 
                 {/* 캘린더 카드 */}
-                <div className="bg-white rounded-xl shadow-lg p-4">
+                <div className="calendar-card">
                     {/* 달력 헤더 (이동 버튼 및 월/년) */}
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="calendar-header">
                         <ChevronLeft 
                             size={20} 
-                            className="text-gray-500 cursor-pointer hover:text-gray-700" 
+                            className="calendar-arrow" 
                             onClick={() => handleMonthChange(-1)} 
                         />
-                        <h3 className="text-lg font-bold text-gray-800">
+                        <h3 className="calendar-month-year">
                             {getMonthName(currentMonth)} {currentYear}
                         </h3>
                         <ChevronRight 
                             size={20} 
-                            className="text-gray-500 cursor-pointer hover:text-gray-700" 
+                            className="calendar-arrow" 
                             onClick={() => handleMonthChange(1)} 
                         />
                     </div>
                     
                     {/* 요일 표시 */}
-                    <div className="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-2">
+                    <div className="calendar-weekdays">
                         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
-                            <div key={day} className="p-2">{day}</div>
+                            <div key={day} className="weekday-label">{day}</div>
                         ))}
                     </div>
 
                     {/* 날짜 그리드 */}
-                    <div className="grid grid-cols-7 gap-y-2">
+                    <div className="calendar-grid">
                         {renderCalendar()}
                     </div>
                 </div>
@@ -301,23 +312,23 @@ const MainPage: React.FC = () => {
             </main>
 
             {/* 3. 하단 네비게이션 */}
-            <footer className="fixed bottom-0 w-full max-w-md bg-white shadow-2xl rounded-t-xl border-t border-gray-100">
-                <div className="flex justify-around items-center h-16">
+            <footer className="bottom-nav-footer">
+                <div className="nav-group">
                     {/* 일기 페이지 (BookOpen) */}
-                    <div className="flex flex-col items-center text-sm text-gray-500 cursor-pointer hover:text-pink-500 transition-colors">
+                    <div className="nav-item">
                         <BookOpen size={24} />
                         <span>일기페이지</span>
                     </div>
                     
                     {/* 홈 버튼 (가운데 큰 버튼) */}
-                    <div className="transform -translate-y-4">
-                        <div className="bg-pink-500 p-3 rounded-full shadow-lg cursor-pointer hover:bg-pink-600 transition-colors">
-                            <Home size={32} className="text-white" />
+                    <div className="nav-item-center">
+                        <div className="home-button-bubble">
+                            <Home size={32} className="home-icon" />
                         </div>
                     </div>
 
                     {/* 마이 페이지 (Search) */}
-                    <div className="flex flex-col items-center text-sm text-gray-500 cursor-pointer hover:text-pink-500 transition-colors">
+                    <div className="nav-item">
                         <Search size={24} />
                         <span>마이페이지</span>
                     </div>
@@ -326,23 +337,5 @@ const MainPage: React.FC = () => {
         </div>
     );
 };
-
-// Loader2 아이콘 정의 (lucide-react에서 가져온다고 가정)
-const Loader2 = ({ className = 'h-5 w-5', size = 24 }: { className?: string, size?: number }) => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width={size} 
-        height={size} 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-        className={className}
-    >
-        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-);
 
 export default MainPage;
