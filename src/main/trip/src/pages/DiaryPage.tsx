@@ -242,13 +242,19 @@ const DiaryPage: React.FC = () => {
                             {/* 타임라인 선 */}
                             <div className="timeline-line"></div>
 
-                            {chapter.entries.map((entry, entryIndex) => (
+                             {chapter.entries.map((entry, entryIndex) => (
                                 <div key={entry.entryId} className="timeline-entry">
-                                    {/* 점 */}
                                     <div className="timeline-dot"></div>
 
-                                    {/* 일기 카드 */}
-                                    <div className="entry-card">
+                                    {/* 일기 카드: 클릭 시 이동 이벤트 추가 */}
+                                    <div 
+                                        className="entry-card"
+                                        onClick={() => {
+                                            console.log(`Navigating to /diary/${entry.entryId}`);
+                                            navigate(`/diary/${entry.entryId}`);
+                                        }}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <h3 className="entry-title">
                                             Chapter {index + 1}.{entryIndex + 1}
                                         </h3>
@@ -257,8 +263,6 @@ const DiaryPage: React.FC = () => {
                                         <div className="entry-meta">
                                             <Clock size={12} className="entry-meta-icon" />
                                             <span>{formatTimeAgo(entry.createdTime)}</span>
-                                            
-                                            {/* '작성하기' 항목에만 펜 모양 아이콘 추가 */}
                                             {entry.subtitle.includes("작성하지 않은") && <Edit2 size={12} className="entry-meta-icon edit-icon" />}
                                         </div>
                                     </div>

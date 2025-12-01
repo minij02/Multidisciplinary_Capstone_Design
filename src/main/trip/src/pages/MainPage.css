@@ -1,6 +1,19 @@
 /* ---------------------------------------------------------------------- */
 /* Global Reset and Layout */
 /* ---------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+KR:wght@300;400;600&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Noto Serif KR', sans-serif;
+    background-color: #f0f0f0;
+}
+
 .main-page-container {
     min-height: 100vh;
     background-color: #f9fafb; /* bg-gray-50 */
@@ -8,7 +21,11 @@
     flex-direction: column;
     align-items: center;
     padding-bottom: 80px; /* 푸터 높이(64px) + 여백 */
-    font-family: 'Inter', sans-serif;
+    position: relative;
+    width: 100%;
+    min-width: 360px;
+    max-width: 480px;
+    margin: 0 auto;
 }
 
 .main-content {
@@ -18,6 +35,8 @@
     display: flex;
     flex-direction: column;
     gap: 24px; /* space-y-6 */
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -42,6 +61,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #1f2937; /* text-gray-800 */
+    margin: 0;
 }
 
 .nav-icon {
@@ -61,6 +81,7 @@
     background-color: white;
     border-radius: 12px; /* rounded-xl */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    margin-top: 10px;
 }
 
 .profile-image {
@@ -70,6 +91,7 @@
     border-radius: 9999px; /* rounded-full */
     border: 4px solid #fce7f3; /* border-pink-100 */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+    margin-bottom: 12px;
 }
 
 .user-name {
@@ -77,18 +99,21 @@
     font-size: 20px;
     font-weight: 600; /* font-semibold */
     color: #1f2937;
+    margin: 0 0 4px 0;
 }
 
 .user-info-detail {
     font-size: 12px; /* text-xs */
     color: #6b7280; /* text-gray-500 */
     margin-top: 4px; /* mt-1 */
+    margin: 0 0 8px 0;
 }
 
 .user-motto {
     font-size: 14px; /* text-sm */
     color: #4b5563; /* text-gray-600 */
     margin-top: 8px; /* mt-2 */
+    margin: 0;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -101,6 +126,7 @@
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     height: 96px; /* h-24 */
+    margin-bottom: 24px;
 }
 
 .stat-card {
@@ -124,6 +150,7 @@
 .stat-value {
     font-size: 30px; /* text-3xl */
     font-weight: 800; /* font-extrabold */
+    margin-bottom: 4px;
 }
 
 .total-stat .stat-value {
@@ -138,6 +165,8 @@
     font-size: 14px; /* text-sm */
     color: #4b5563;
     margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -148,6 +177,7 @@
     border-radius: 12px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     padding: 16px; /* p-4 */
+    margin-bottom: 20px;
 }
 
 .calendar-header {
@@ -161,16 +191,20 @@
     font-size: 18px; /* text-lg */
     font-weight: bold;
     color: #1f2937;
+    margin: 0;
 }
 
 .calendar-arrow {
     color: #6b7280; /* text-gray-500 */
     cursor: pointer;
     transition: color 0.15s;
+    padding: 4px;
+    border-radius: 50%;
 }
 
 .calendar-arrow:hover {
     color: #374151; /* hover:text-gray-700 */
+    background-color: #f0f0f0;
 }
 
 .calendar-weekdays {
@@ -191,6 +225,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px 0; /* gap-y-2 */
+    row-gap: 8px;
 }
 
 .calendar-day-cell {
@@ -203,6 +238,7 @@
     position: relative;
     box-sizing: border-box;
     cursor: pointer;
+    flex-direction: column;
 }
 
 .calendar-date-bubble {
@@ -213,6 +249,8 @@
     justify-content: center;
     font-size: 14px; /* text-sm */
     transition: background-color 0.15s, color 0.15s;
+    border-radius: 50%;
+    margin-bottom: 2px;
 }
 
 .normal-day {
@@ -228,43 +266,44 @@
 }
 
 .diary-marker {
-    position: absolute;
-    bottom: 0px; 
-    right: 4px; 
     color: #b91c1c; /* text-red-700 */
+    margin-top: -2px;
 }
 
 /* ---------------------------------------------------------------------- */
 /* 5. Bottom Navigation */
 /* ---------------------------------------------------------------------- */
 .bottom-nav-footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
-    max-width: 448px;
+    /* max-width removed to fit container relative positioning */
     background-color: white;
     box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1); /* shadow-2xl (상단 그림자) */
     border-top-left-radius: 12px; /* rounded-t-xl */
     border-top-right-radius: 12px;
     border-top: 1px solid #f3f4f6; /* border-t border-gray-100 */
     z-index: 20;
+    padding: 12px 0 20px 0;
 }
 
 .nav-group {
     display: flex;
     justify-content: space-around;
-    align-items: center;
-    height: 64px; /* h-16 */
+    align-items: flex-end;
 }
 
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 14px; /* text-sm */
+    font-size: 10px; /* text-sm -> adjusted for mobile */
     color: #6b7280; /* text-gray-500 */
     cursor: pointer;
     transition: color 0.2s;
+    width: 60px;
+    gap: 4px;
 }
 
 .nav-item:hover {
@@ -272,24 +311,26 @@
 }
 
 .nav-item-center {
-    transform: translateY(-16px); /* -translate-y-4 */
+    position: relative;
+    top: -30px;
     cursor: pointer;
 }
 
 .home-button-bubble {
     background-color: #ec4899; /* bg-pink-500 */
-    padding: 12px; /* p-3 */
+    width: 56px;
+    height: 56px;
     border-radius: 9999px;
     box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.3), 0 4px 6px -2px rgba(236, 72, 153, 0.2); /* shadow-lg (핑크색 그림자) */
     transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
 
 .home-button-bubble:hover {
     background-color: #db2777; /* hover:bg-pink-600 */
-}
-
-.home-icon {
-    color: white;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -297,11 +338,13 @@
 /* ---------------------------------------------------------------------- */
 .loading-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     min-height: 100vh;
     background-color: #f9fafb;
+    gap: 12px;
 }
 
 .loader-icon {
@@ -315,13 +358,16 @@
 }
 
 .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
     padding: 16px; /* p-4 */
     text-align: center;
-    background-color: #fee2e2; /* bg-red-100 */
+    background-color: #f9fafb; 
     color: #b91c1c; /* text-red-700 */
-    border: 1px solid #f87171; /* border-red-400 */
-    border-radius: 8px; /* rounded-lg */
-    margin: 16px; /* m-4 */
+    gap: 12px;
 }
 
 .error-title {
@@ -337,8 +383,10 @@
     padding: 8px 16px; /* px-4 py-2 */
     background-color: #ec4899;
     color: white;
+    border: none;
     border-radius: 9999px; /* rounded-full */
     transition: background-color 0.2s;
+    cursor: pointer;
 }
 
 .login-button:hover {

@@ -7,31 +7,29 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter // Service에서 DTO를 Entity로 변환할 때 편리합니다.
+@Setter
 @NoArgsConstructor
-@Table(name = "채팅 기록") // DDL의 '채팅 기록' 테이블과 매핑
-public class ChatMessage extends BaseTimeEntity { // '생성일', '수정일' 자동 관리를 상속받음
+@Table(name = "chat_message") // "채팅 기록" -> "chat_message"
+public class ChatMessage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "채팅 아이디")
+    @Column(name = "chat_message_id") // "채팅 아이디" -> "chat_message_id"
     private Long id;
 
-    @Column(name = "메시지 발신자", nullable = false)
+    @Column(name = "sender", nullable = false) // "메시지 발신자" -> "sender"
     private String sender; // "user" 또는 "bot"
 
-    @Column(name = "메시지 내용", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "message", columnDefinition = "TEXT", nullable = false) // "메시지 내용" -> "message"
     private String message;
 
     // --- 연관관계 매핑 ---
 
-    // '채팅 기록'은 '사용자'에게 종속됨 (N:1)
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY: 실제 User 객체가 필요할 때만 DB에서 조회
-    @JoinColumn(name = "사용자 아이디", nullable = false) // DDL의 '사용자 아이디' (FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false) // "사용자 아이디" -> "user_id"
     private User user;
 
-    // '채팅 기록'은 '일기 항목'에 종속됨 (N:1)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "일기 항목 아이디", nullable = false) // DDL의 '일기 항목 아이디' (FK)
+    @JoinColumn(name = "diary_entry_id", nullable = false) // "일기 항목 아이디" -> "diary_entry_id"
     private DiaryEntry diaryEntry;
 }

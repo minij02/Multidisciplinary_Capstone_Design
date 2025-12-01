@@ -16,10 +16,10 @@ import java.time.LocalDateTime;
 public abstract class BaseTimeEntity {
 
     @CreatedDate // Entity가 생성될 때 시간이 자동 저장됩니다.
-    @Column(name = "생성일", updatable = false) // DDL의 '생성일' 컬럼과 매핑
+    @Column(name = "created_at", updatable = false) // DDL의 '생성일' 컬럼과 매핑
     private LocalDateTime createdAt;
 
     @LastModifiedDate // Entity가 수정될 때 시간이 자동 저장됩니다.
-    @Column(name = "수정일") // DDL의 '수정일' 컬럼과 매핑
+    @Column(name = "updated_at") // DDL의 '수정일' 컬럼과 매핑
     private LocalDateTime updatedAt;
 }

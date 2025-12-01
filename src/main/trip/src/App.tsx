@@ -8,6 +8,7 @@ import OnboardingPage from './pages/OnboardingPage';
 import MainPage from './pages/MainPage';
 import DiaryPage from './pages/DiaryPage';
 import DiaryWrite from './components/diary/DiaryWrite'; 
+import DiaryDetailPage from './pages/DiaryDetailPage';
 import InterviewChat from './components/interview/InterviewChat';
 import ImageGallery from './components/gallery/ImageGallery';
 
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "diary/write", // 일기 작성 시작 페이지
         element: <DiaryWrite />,
+      },
+      {
+        path: "diary/:entryId", // 일기 세부 내용 페이지
+        element: <DiaryDetailPage />,
       },
       {
         path: "interview/:diaryEntryId", // 음성/채팅 인터뷰 페이지
