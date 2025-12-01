@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +62,7 @@ public class ChapterService {
 
         newChapter.setIsPublished(false); 
         newChapter.setTotalCost(BigDecimal.ZERO);
+        newChapter.setKey(UUID.randomUUID().toString()); 
         
         TripChapter savedChapter = tripChapterRepository.save(newChapter);
         

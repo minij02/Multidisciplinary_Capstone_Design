@@ -130,8 +130,17 @@ const OnboardingPage: React.FC = () => {
 
                 // 3. 성공 시, 메인 페이지 또는 새 챕터 페이지로 이동
                 console.log(`New Chapter created with ID: ${chapterId}`);
-                navigate(`/main`); // 메인 페이지로 이동하거나
-                // navigate(`/chapter/${chapterId}`); // 새 챕터 상세 페이지로 이동
+                 // ★ [수정됨] navigate에 state 옵션 추가 ★
+                // 온보딩에서 입력한 정보를 다음 페이지로 넘깁니다.
+                navigate('/diary/write', { 
+                    state: {
+                        chapterId: chapterId,       // 생성된 챕터 ID
+                        diaryTitle: data.name,      // 여행 제목
+                        arrivalCity: data.city,     // 도착 도시
+                        startDate: data.startDate,  // 시작일 (String)
+                        endDate: data.endDate       // 종료일 (String)
+                    }
+                }); 
                 
             } catch (error) {
                 // 4. 실패 시, 오류 메시지 표시 및 인증 오류 처리

@@ -4,6 +4,7 @@ import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.dto.ChatMessageRequest;
 import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.DiaryDetailResponse;
+import com.example.capstone.dto.DiaryUpdateRequest;
 import com.example.capstone.security.PrincipalDetails;
 import com.example.capstone.service.DiaryService;
 import lombok.RequiredArgsConstructor;
@@ -108,6 +109,29 @@ public class DiaryController {
         } catch (IllegalArgumentException e) {
             // 일기를 찾을 수 없거나 접근 권한이 없을 경우 (403 Forbidden)
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        }
+    }
+
+     /**
+     * 5. [신규] 일기 수정
+     * PUT /api/diary/{entryId}
+     */
+    @PutMapping("/{entryId}")
+    public ResponseEntity<Long> updateDiary(
+            @PathVariable Long entryId,
+            @RequestBody DiaryUpdateRequest request,
+            Authentication authentication
+    ) {
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long userId = principalDetails.getUser().getUserId();
+
+        try {
+            Long updatedId = diaryService.updateDiary(entryId, userId, request);
+            return new ResponseEntity<>(updatedId, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "일기 수정 중 오류가 발생했습니다.");
         }
     }
 }

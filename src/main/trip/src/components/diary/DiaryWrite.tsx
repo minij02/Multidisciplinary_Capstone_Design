@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import axios from 'axios'; // ★ 1. API 호출을 위한 axios import
 
@@ -12,22 +12,66 @@ import { FaUserCircle, FaPlane } from 'react-icons/fa';
 import { BsImage } from 'react-icons/bs';
 import { BiBookContent, BiHomeAlt, BiUser } from 'react-icons/bi';
 
+interface LocationState {
+  chapterId?: number;
+  diaryTitle?: string;
+  arrivalCity?: string;
+  startDate?: string; // YYYY-MM-DD string
+  endDate?: string;   // YYYY-MM-DD string
+}
+
 const DiaryWrite: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 전달받은 state 추출 (없을 경우를 대비해 빈 객체 처리)
+  const state = location.state as LocationState || {};
 
-  // --- (state 변수들은 이전과 동일) ---
+  // --- State 초기값 설정 (온보딩에서 받은 데이터 사용) ---
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(new Date());
+  
+  // 날짜 문자열을 Date 객체로 변환 (react-datepicker는 Date 객체 사용)
+  const [startDate, setStartDate] = useState<Date | null>(
+    state.startDate ? new Date(state.startDate) : new Date()
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    state.endDate ? new Date(state.endDate) : new Date()
+  );
+
   const [departureCity, setDepartureCity] = useState('');
-  const [arrivalCity, setArrivalCity] = useState('도쿄');
-  const [tripNights, setTripNights] = useState('3');
-  const [tripDays, setTripDays] = useState('4');
-  const [tripCost, setTripCost] = useState('1,130,000');
-  const [diaryTitle, setDiaryTitle] = useState('낯선 공기와 설렘. 도쿄');
+  
+  // 온보딩에서 받은 도시명 사용 (없으면 기본값 '도쿄')
+  const [arrivalCity, setArrivalCity] = useState(state.arrivalCity || '도쿄');
+  
+  // 온보딩에서 받은 제목 사용 (없으면 기본값)
+  const [diaryTitle, setDiaryTitle] = useState(state.diaryTitle || '새로운 여행 일기');
+
+  // 여행 기간 자동 계산 로직
+  const calculateDuration = (start: Date | null, end: Date | null) => {
+    if (!start || !end) return { nights: '0', days: '1' };
+    const diff = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+    return { 
+        nights: String(Math.max(0, diffDays)), 
+        days: String(Math.max(1, diffDays + 1)) 
+    };
+  };
+
+  const initialDuration = calculateDuration(startDate, endDate);
+  const [tripNights, setTripNights] = useState(initialDuration.nights);
+  const [tripDays, setTripDays] = useState(initialDuration.days);
+  const [tripCost, setTripCost] = useState('0'); 
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState(false); // ★ 3. (신규) API 호출 중 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 날짜 변경 시 기간 자동 재계산
+  useEffect(() => {
+    const duration = calculateDuration(startDate, endDate);
+    setTripNights(duration.nights);
+    setTripDays(duration.days);
+  }, [startDate, endDate]);
+
 
   // --- (이미지 핸들러 등은 이전과 동일) ---
   const handleImageUploaderClick = () => { fileInputRef.current?.click(); };
@@ -85,7 +129,8 @@ const DiaryWrite: React.FC = () => {
       tripNights: parseInt(tripNights) || 0, // String -> Integer (기본값 0)
       tripDays: parseInt(tripDays) || 1,     // String -> Integer (기본값 1)
       tripCost: parseFloat(tripCost.replace(/,/g, '')) || 0, // "1,130,000" -> 1130000 (BigDecimal/Float)
-      creationMethod: "chat" // "음성으로 작성"을 선택했으므로 "chat"
+      creationMethod: "chat", // "음성으로 작성"을 선택했으므로 "chat"
+      chapterId: state.chapterId // 온보딩에서 생성된 챕터 ID
     };
 
     try {

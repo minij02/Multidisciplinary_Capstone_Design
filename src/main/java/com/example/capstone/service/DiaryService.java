@@ -4,6 +4,7 @@ import com.example.capstone.domain.*; // 모든 Entity import
 import com.example.capstone.dto.ChatMessageRequest;
 import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.DiaryDetailResponse;
+import com.example.capstone.dto.DiaryUpdateRequest;
 import com.example.capstone.repository.*; // 모든 Repository import
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,18 +26,20 @@ public class DiaryService {
     private final DiaryEntryRepository diaryEntryRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final AttachedFileRepository attachedFileRepository;
 
     private final WebClient webClient;
     private final String model;
 
     public DiaryService(
-            TripChapterRepository tripChapterRepository, DiaryEntryRepository diaryEntryRepository, ChatMessageRepository chatMessageRepository, UserRepository userRepository, @Value("${spring.ai.openai.chat.base-url}") String apiUrl,
+            TripChapterRepository tripChapterRepository, DiaryEntryRepository diaryEntryRepository, ChatMessageRepository chatMessageRepository, UserRepository userRepository, AttachedFileRepository attachedFileRepository, @Value("${spring.ai.openai.chat.base-url}") String apiUrl,
             @Value("${spring.ai.openai.api-key}") String apiKey,
             @Value("${spring.ai.openai.chat.options.model}") String model) {
         this.tripChapterRepository = tripChapterRepository;
         this.diaryEntryRepository = diaryEntryRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
+        this.attachedFileRepository = attachedFileRepository;
         this.model = model;
         this.webClient = WebClient.builder()
                 .baseUrl(apiUrl)
@@ -250,5 +253,39 @@ public class DiaryService {
                 // 생성 시간 (BaseTimeEntity 상속)
                 .chapterCreationTime(entry.getCreatedAt()) 
                 .build();
+    }
+
+    /**
+     * [신규] 일기 수정 기능
+     */
+    @Transactional
+    public Long updateDiary(Long entryId, Long userId, DiaryUpdateRequest request) {
+        // 1. 일기 조회 및 권한 체크
+        DiaryEntry entry = diaryEntryRepository.findByIdAndUserId(entryId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없거나 수정 권한이 없습니다."));
+
+        // 2. 본문 내용 수정
+        if (request.getContent() != null) {
+            entry.setContent(request.getContent());
+        }
+
+        // 3. 이미지 수정 (간단히 기존 이미지를 지우고 새 이미지를 추가하는 로직 예시)
+        // 실제로는 파일 업로드 로직이 필요하지만, 여기서는 URL 문자열로 처리
+        if (request.getImageUrl() != null && !request.getImageUrl().isEmpty()) {
+            // 기존 파일 삭제 (DB만)
+            List<AttachedFile> oldFiles = entry.getAttachedFiles();
+            attachedFileRepository.deleteAll(oldFiles);
+            entry.getAttachedFiles().clear();
+
+            // 새 파일 정보 추가
+            AttachedFile newFile = new AttachedFile();
+            newFile.setFileUrl(request.getImageUrl());
+            newFile.setMediaType("image");
+            newFile.setDiaryEntry(entry);
+            attachedFileRepository.save(newFile);
+        }
+
+        // JPA 변경 감지(Dirty Checking)로 인해 save 호출 불필요하지만 명시적으로 호출
+        return entry.getId();
     }
 }
