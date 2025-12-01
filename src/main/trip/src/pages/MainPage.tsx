@@ -2,6 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { User, ChevronLeft, ChevronRight, Home, Search, BookOpen, Clock } from 'lucide-react';
 import './MainPage.css'; // 👈 새로 정의할 CSS 파일 임포트
 
+// 백엔드 DTO 변경 사항 반영
+interface DiaryEntryItem {
+    entryId: number;
+    date: string; // "YYYY-MM-DD"
+}
+
 // API 응답 DTO를 모방한 타입 정의
 interface MainPageResponse {
     userId: number;
@@ -9,8 +15,7 @@ interface MainPageResponse {
     userEmail: string;
     totalDiaryCount: number;
     favoriteDiaryCount: number;
-    // API에서 LocalDate가 YYYY-MM-DD 형식의 문자열로 전송됨
-    diaryDates: string[]; 
+    diaryEntries: DiaryEntryItem[]; 
 }
 
 const API_URL = "http://localhost:8080/api/page/main";
@@ -123,9 +128,16 @@ const MainPage: React.FC = () => {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth(); // 0 (Jan) - 11 (Dec)
 
-    // 일기 작성일 (YYYY-MM-DD 형식의 문자열 Set)
-    const diaryDatesSet = useMemo(() => {
-        return new Set(data?.diaryDates || []);
+     // 2. 데이터 구조 변경: Set<string> -> Map<string, number>
+    // 날짜(Key)를 주면 일기ID(Value)를 바로 찾을 수 있도록 Map 사용
+    const diaryMap = useMemo(() => {
+        const map = new Map<string, number>();
+        if (data?.diaryEntries) {
+            data.diaryEntries.forEach(item => {
+                map.set(item.date, item.entryId);
+            });
+        }
+        return map;
     }, [data]);
 
     // --- 데이터 로딩 이펙트 ---
@@ -166,7 +178,9 @@ const MainPage: React.FC = () => {
         // 날짜 채우기
         for (let day = 1; day <= totalDays; day++) {
             const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const hasDiary = diaryDatesSet.has(dateString);
+            // 3. Map에서 해당 날짜의 ID 조회
+            const entryId = diaryMap.get(dateString); 
+            const hasDiary = entryId !== undefined;
             
             const dayClass = hasDiary
                 ? 'diary-day'

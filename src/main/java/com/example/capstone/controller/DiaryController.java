@@ -1,7 +1,6 @@
 package com.example.capstone.controller;
 
 import com.example.capstone.domain.DiaryEntry;
-import com.example.capstone.domain.TripChapter;
 import com.example.capstone.dto.ChatMessageRequest;
 import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.DiaryDetailResponse;

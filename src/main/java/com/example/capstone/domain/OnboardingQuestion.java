@@ -27,6 +27,11 @@ public class OnboardingQuestion {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // ★ 수정됨: TripChapter와 1:1 관계 (역방향 매핑) ★
+    // mappedBy는 TripChapter 클래스의 필드명 "onboardingQuestion"을 가리킵니다.
+    @OneToOne(mappedBy = "onboardingQuestion")
+    private TripChapter tripChapter;
+
     // Q1: 여행 시작 날짜 (Onboarding -1)
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;

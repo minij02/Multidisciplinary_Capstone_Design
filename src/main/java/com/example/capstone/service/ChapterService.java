@@ -51,6 +51,8 @@ public class ChapterService {
         TripChapter newChapter = new TripChapter();
         newChapter.setUser(user);
 
+        newChapter.setOnboardingQuestion(onboard); // 저장된 온보딩 질문을 챕터에 연결
+        
         newChapter.setTitle(request.getTravelTitle()); 
 
         newChapter.setStartDate(request.getStartDate());
@@ -78,10 +80,10 @@ public class ChapterService {
     }
 
     /**
-     * TravelChapter 엔티티를 ChapterListResponse DTO로 변환합니다.
+     * TripChapter 엔티티를 ChapterListResponse DTO로 변환합니다.
      */
     private ChapterListResponse convertToChapterListResponse(TripChapter tc) {
-        // DailyEntry 목록을 EntryListItemResponse DTO로 변환
+        // DiaryEntry 목록을 EntryListItemResponse DTO로 변환
         List<EntryListItemResponse> entries = tc.getDiaryEntries().stream()
                 .map(this::convertToEntryListItemResponse)
                 .toList();
@@ -99,7 +101,7 @@ public class ChapterService {
     }
 
     /**
-     * DailyEntry 엔티티를 EntryListItemResponse DTO로 변환합니다.
+     * DiaryEntry 엔티티를 EntryListItemResponse DTO로 변환합니다.
      */
     private EntryListItemResponse convertToEntryListItemResponse(DiaryEntry de) {
         return EntryListItemResponse.builder()

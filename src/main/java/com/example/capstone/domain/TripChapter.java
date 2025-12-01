@@ -13,59 +13,71 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "여행 챕터")
+@Table(name = "trip_chapter")
 public class TripChapter extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "챕터 아이디")
+    @Column(name = "trip_chapter_id")
     private Long id;
 
-    @Column(name = "챕터 제목", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "챕터 대표 이미지", length = 1000)
+    @Column(name = "cover_image_url", length = 1000)
     private String coverImageUrl;
 
-    @Column(name = "여행 시작일")
+    @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "여행 종료일")
+    @Column(name = "end_date")
     private LocalDate endDate;
 
-    // ★ 1. (신규) 4개 필드 추가 ★
-    @Column(name = "출발 장소")
+    @Column(name = "departure_city")
     private String departureCity;
 
-    @Column(name = "도착 장소")
+    @Column(name = "arrival_city")
     private String arrivalCity;
 
-    @Column(name = "여행 N박")
-    private Integer tripNights; // "3" (박)
+    @Column(name = "trip_nights")
+    private Integer tripNights;
 
-    @Column(name = "여행 N일")
-    private Integer tripDays;   // "4" (일)
+    @Column(name = "trip_days")
+    private Integer tripDays;
 
-    // --- (이하 동일) ---
-    @Column(name = "출판 완료 여부", nullable = false)
+    @Column(name = "is_published", nullable = false)
     private Boolean isPublished = false;
 
-    @Column(name = "총 경비", precision = 10, scale = 2)
+    @Column(name = "total_cost", precision = 10, scale = 2)
     private BigDecimal totalCost;
 
-    @Column(name = "`Key`", nullable = false) // (이전 수정 사항 반영됨)
+    @Column(name = "`key`", nullable = false)
     private String key;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "사용자 아이디", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // ★ [추가됨] 1:1 관계 매핑 필드 ★
+    // DB의 'trip_chapter' 테이블에 'onboarding_id' 컬럼이 생성됩니다.
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "onboarding_id") 
+    private OnboardingQuestion onboardingQuestion;
 
     @OneToMany(mappedBy = "tripChapter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiaryEntry> diaryEntries = new ArrayList<>();
 
-    // (연관관계 편의 메서드)
+    // --- 편의 메서드 ---
+
+    // 1. 일기 추가 편의 메서드
     public void addDiaryEntry(DiaryEntry entry) {
         this.diaryEntries.add(entry);
         entry.setTripChapter(this);
+    }
+
+    // 2. [추가됨] 온보딩 질문 설정 편의 메서드
+    // 서비스 계층에서 newChapter.setOnboardingQuestion(onboard) 형태로 호출하여 관계를 맺습니다.
+    public void setOnboardingQuestion(OnboardingQuestion onboardingQuestion) {
+        this.onboardingQuestion = onboardingQuestion;
     }
 }

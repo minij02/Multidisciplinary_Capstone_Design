@@ -2,11 +2,12 @@ package com.example.capstone.repository;
 
 import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.domain.TripChapter;
+import com.example.capstone.dto.DiaryDateResponse;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +28,14 @@ public interface DiaryEntryRepository extends JpaRepository<DiaryEntry, Long> {
     Optional<DiaryEntry> findByIdAndUserId(@Param("entryId") Long entryId, @Param("userId") Long userId);
     
     /**
-     * DailyEntryRepository에서 이동됨:
-     * 특정 사용자의 모든 일기 작성 날짜를 조회하는 쿼리 (달력용)
-     * 필드 변경: entryDate -> date, chapter -> tripChapter
+     * (수정됨) 특정 사용자의 일기 ID와 날짜를 함께 조회 (달력 매핑용)
+     * 반환 타입: List<LocalDate> -> List<DiaryDateDto>
      */
-    @Query("SELECT de.date FROM DiaryEntry de " +
+    @Query("SELECT new com.example.capstone.dto.DiaryDateResponse(de.id, de.date) " +
+           "FROM DiaryEntry de " +
            "JOIN de.tripChapter tc " +
            "WHERE tc.user.userId = :userId")
-    List<LocalDate> findDiaryDatesByUserId(@Param("userId") Long userId);
+    List<DiaryDateResponse> findDiaryListByUserId(@Param("userId") Long userId);
 
     /**
      * DailyEntryRepository에서 이동됨:
