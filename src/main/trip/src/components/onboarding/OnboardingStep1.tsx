@@ -1,7 +1,6 @@
 import React from 'react';
 import OnboardingLayout from '../../layouts/OnboardingLayout';
 import { OnboardingData } from '../../pages/OnboardingPage';
-import './OnboardingStep1.css'; // 👈 새로 정의할 CSS 파일을 임포트합니다.
 
 interface StepProps {
   data: OnboardingData; 
