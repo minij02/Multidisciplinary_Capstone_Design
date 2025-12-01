@@ -1,8 +1,6 @@
 import React from 'react';
 import OnboardingLayout from '../../layouts/OnboardingLayout';
-import '@/styles/Onboarding.css';
 import { OnboardingData } from '../../pages/OnboardingPage';
-import './OnboardingStep2.css'; // 👈 OnboardingStep2 전용 CSS 임포트
 
 interface StepProps {
   data: OnboardingData; 
@@ -29,21 +27,15 @@ AI가 당신의 여행 스타일에 맞춰 감성적인 일기를 생성해 드�
       isNextDisabled={isNextDisabled}
       showNextButton={true}
     >
-      {/* 이전에 정의한 공통 CSS 클래스인 'onboarding-content-inner'를 사용하여 스타일 적용 */}
-      <div className="onboarding-content-inner">
+      <div className="input-container">
         
         <textarea
-          placeholder="텍스트를 입력해주세요. (최소 10자)"
+          placeholder="텍스트를 입력해주세요."
           rows={6}
           value={data.motivation}
           onChange={(e) => updateData('motivation', e.target.value)}
           className="input-common textarea-resize-none"
         />
-        
-        {/* 글자 수 표시에 대한 CSS 클래스 적용 */}
-        <p className="character-count">
-          {data.motivation.length}/10자 이상
-        </p>
       </div>
     </OnboardingLayout>
   );

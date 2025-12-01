@@ -1,6 +1,5 @@
 import React from 'react';
 import OnboardingLayout from '../../layouts/OnboardingLayout';
-import '../../styles/Onboarding.css';
 import { OnboardingData } from '../../pages/OnboardingPage';
 
 interface StepProps {
@@ -28,7 +27,7 @@ const OnboardingStep4: React.FC<StepProps> = ({ data, updateData, handleNext, is
       isNextDisabled={isNextDisabled}
       showNextButton={true}
     >
-      <div className="flex flex-col space-y-4 h-full pt-8">
+     <div className="input-container">
         <input
           type="text"
           placeholder="텍스트를 입력하세요"

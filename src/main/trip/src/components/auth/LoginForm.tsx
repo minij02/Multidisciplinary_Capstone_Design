@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/auth/LoginForm.css'
 import { Eye, EyeOff, XCircle } from 'lucide-react';
 
@@ -17,6 +18,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   handleInputChange,
   handleLogin,
 }) => {
+  const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
@@ -64,7 +66,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
       )}
 
       <div className="forgot-links">
-        <a href="#">아이디</a> | <a href="#">비밀번호 찾기</a>
+        {/* ★ 수정됨: a 태그 대신 span에 onClick 이벤트 연결 */}
+        <span 
+          onClick={() => navigate('/forgot-password')} 
+          style={{ cursor: 'pointer', color: '#666' }}
+        >
+          아이디 | 비밀번호 찾기
+        </span>
       </div>
 
       <button

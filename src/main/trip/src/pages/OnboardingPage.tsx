@@ -179,7 +179,7 @@ const OnboardingPage: React.FC = () => {
             case 1: // 도시와 날짜
                 return !data.city || !data.startDate || !data.endDate;
             case 2: // 동기
-                return !data.motivation || data.motivation.length < 10; // 10자 미만 테스트 가정
+                return !data.motivation;
             case 3: // 테마
                 return !data.theme;
             case 4: // 여행 이름

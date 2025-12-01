@@ -3,6 +3,7 @@ import GlobalLayout from './layouts/GlobalLayout';
 import Onboarding from './components/onboarding/Onboarding';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import OnboardingPage from './pages/OnboardingPage';
 import MainPage from './pages/MainPage';
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "forgot-password", // ★ 신규 라우트 추가
+        element: <ForgotPasswordPage />,
       },
       {
         path: "oauth-success",

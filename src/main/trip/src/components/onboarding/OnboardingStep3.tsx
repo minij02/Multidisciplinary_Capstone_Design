@@ -1,6 +1,5 @@
 import React from 'react';
 import OnboardingLayout from '../../layouts/OnboardingLayout';
-import '../../styles/Onboarding.css';
 import { OnboardingData } from '../../pages/OnboardingPage';
 
 interface StepProps {
@@ -31,7 +30,7 @@ const OnboardingStep3: React.FC<StepProps> = ({ data, updateData, handleNext, is
         공통 CSS 파일에 정의된 'onboarding-content-inner'를 사용합니다. 
         (이 클래스는 flex-col 및 간격(gap)을 담당합니다.)
       */}
-      <div className="onboarding-content-inner">
+      <div className="input-container">
         <input
           type="text"
           placeholder="텍스트를 입력하세요"
