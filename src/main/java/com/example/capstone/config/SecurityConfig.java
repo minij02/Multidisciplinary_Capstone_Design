@@ -62,7 +62,7 @@ public class SecurityConfig {
     .requestMatchers("/api/auth/resend-code").permitAll()
     .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**").permitAll()
     .requestMatchers("/api/chapters/**").authenticated()
-    .requestMatchers("/api/diary/**").authenticated()
+    .requestMatchers("/api/diary/**").permitAll()
     .anyRequest().authenticated()
 )
             .exceptionHandling(exceptions -> exceptions

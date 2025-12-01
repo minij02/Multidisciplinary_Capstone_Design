@@ -225,30 +225,30 @@ public class DiaryService {
     public DiaryDetailResponse getDiaryDetail(Long entryId, Long userId) {
         
         // 1. 사용자 ID를 기준으로 일기 항목과 관련 데이터를 조회 (인가 체크)
-        DailyEntry entry = diaryEntryRepository.findByIdAndUserId(entryId, userId)
+        // Repository에서 이미 Fetch Join으로 TripChapter와 AttachedFiles를 가져옵니다.
+        DiaryEntry entry = diaryEntryRepository.findByIdAndUserId(entryId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일기 항목을 찾을 수 없거나 접근 권한이 없습니다."));
 
-        // 2. 미디어 URL 목록 추출 (EntryMedia 엔티티의 fileUrl 필드를 사용한다고 가정)
-        // DailyEntry 엔티티에 getMedia() 메서드가 List<EntryMedia>를 반환한다고 가정합니다.
-        List<String> mediaUrls = entry.getMedia().stream()
-                .map(EntryMedia::getFileUrl) // EntryMedia 엔티티에 getFileUrl() 메서드가 있다고 가정
+        // 2. 미디어 URL 목록 추출 (AttachedFile 엔티티 사용)
+        // DiaryEntry의 'attachedFiles' 필드를 사용
+        List<String> mediaUrls = entry.getAttachedFiles().stream()
+                .map(AttachedFile::getFileUrl) // AttachedFile 엔티티에 getFileUrl()이 있다고 가정
                 .collect(Collectors.toList());
 
-        // 3. DTO로 변환 및 반환 (누락된 로직 완성)
+        // 3. DTO로 변환 및 반환
         return DiaryDetailResponse.builder()
                 .subtitle(entry.getSubtitle())
                 .content(entry.getContent())
                 
-                // 챕터 정보 추출
-                .chapterId(entry.getChapter().getChapterId()) // TripChapter 엔티티에서 ID 추출
-                .chapterTitle(entry.getChapter().getTitle()) // TripChapter 엔티티에서 Title 추출
+                // 챕터 정보 추출 (TripChapter 접근)
+                .chapterId(entry.getTripChapter().getId()) // TripChapter의 ID (getId() 가정)
+                .chapterTitle(entry.getTripChapter().getTitle()) // TripChapter의 Title
                 
                 // 미디어 정보
                 .mediaUrls(mediaUrls)
                 
-                // 생성 시간은 BaseTimeEntity에서 상속받은 created_at 필드를 사용한다고 가정
-                .chapterCreationTime(entry.getChapter().getCreatedAt()) 
-                
+                // 생성 시간 (BaseTimeEntity 상속)
+                .chapterCreationTime(entry.getCreatedAt()) 
                 .build();
     }
 }

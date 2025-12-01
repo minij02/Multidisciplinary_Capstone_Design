@@ -2,7 +2,7 @@ package com.example.capstone.service;
 
 import com.example.capstone.domain.User;
 import com.example.capstone.dto.MainPageResponse;
-import com.example.capstone.repository.DailyEntryRepository;
+import com.example.capstone.repository.DiaryEntryRepository;
 import com.example.capstone.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.List;
 public class MypageService {
 
     private final UserRepository userRepository;
-    private final DailyEntryRepository dailyEntryRepository;
+    private final DiaryEntryRepository dailyEntryRepository;
 
     /**
      * 메인 페이지 (마이 페이지)에 필요한 모든 데이터를 조회합니다.

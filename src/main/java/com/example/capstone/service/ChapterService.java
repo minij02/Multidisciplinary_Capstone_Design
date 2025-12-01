@@ -1,14 +1,14 @@
 package com.example.capstone.service;
 
 import com.example.capstone.domain.OnboardingQuestion;
-import com.example.capstone.domain.DailyEntry;
-import com.example.capstone.domain.TravelChapter;
+import com.example.capstone.domain.DiaryEntry;
+import com.example.capstone.domain.TripChapter;
 import com.example.capstone.domain.User;
 import com.example.capstone.dto.ChapterListResponse;
 import com.example.capstone.dto.EntryListItemResponse;
 import com.example.capstone.dto.NewChapterRequest;
 import com.example.capstone.repository.OnboardingQuestionRepository;
-import com.example.capstone.repository.TravelChapterRepository;
+import com.example.capstone.repository.TripChapterRepository;
 import com.example.capstone.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChapterService {
 
-    private final TravelChapterRepository travelChapterRepository;
+    private final TripChapterRepository tripChapterRepository;
     private final OnboardingQuestionRepository onboardingQuestionRepository;
     private final UserRepository userRepository;
 
@@ -48,7 +48,7 @@ public class ChapterService {
         onboardingQuestionRepository.save(onboard);
 
         // 3. 새 여행 챕터 생성 및 저장 (TravelChapter 테이블)
-        TravelChapter newChapter = new TravelChapter();
+        TripChapter newChapter = new TripChapter();
         newChapter.setUser(user);
 
         newChapter.setTitle(request.getTravelTitle()); 
@@ -60,16 +60,16 @@ public class ChapterService {
         newChapter.setIsPublished(false); 
         newChapter.setTotalCost(BigDecimal.ZERO);
         
-        TravelChapter savedChapter = travelChapterRepository.save(newChapter);
+        TripChapter savedChapter = tripChapterRepository.save(newChapter);
         
-        return savedChapter.getChapterId();
+        return savedChapter.getId();
     }
 
     @Transactional(readOnly = true)
     public List<ChapterListResponse> getAllChaptersAndEntries(Long userId) {
         
         // 1. Fetch Join을 사용하여 DB에서 챕터와 일기 데이터를 한 번에 로드
-        List<TravelChapter> chapters = travelChapterRepository.findAllWithEntriesByUserId(userId);
+        List<TripChapter> chapters = tripChapterRepository.findAllWithEntriesByUserId(userId);
 
         // 2. 엔티티를 계층적 DTO로 변환
         return chapters.stream()
@@ -80,9 +80,9 @@ public class ChapterService {
     /**
      * TravelChapter 엔티티를 ChapterListResponse DTO로 변환합니다.
      */
-    private ChapterListResponse convertToChapterListResponse(TravelChapter tc) {
+    private ChapterListResponse convertToChapterListResponse(TripChapter tc) {
         // DailyEntry 목록을 EntryListItemResponse DTO로 변환
-        List<EntryListItemResponse> entries = tc.getEntries().stream()
+        List<EntryListItemResponse> entries = tc.getDiaryEntries().stream()
                 .map(this::convertToEntryListItemResponse)
                 .toList();
 
@@ -90,7 +90,7 @@ public class ChapterService {
         String period = formatTravelPeriod(tc);
 
         return ChapterListResponse.builder()
-                .chapterId(tc.getChapterId())
+                .chapterId(tc.getId())
                 .title(tc.getTitle())
                 .coverImageUrl(tc.getCoverImageUrl())
                 .travelPeriod(period)
@@ -101,9 +101,9 @@ public class ChapterService {
     /**
      * DailyEntry 엔티티를 EntryListItemResponse DTO로 변환합니다.
      */
-    private EntryListItemResponse convertToEntryListItemResponse(DailyEntry de) {
+    private EntryListItemResponse convertToEntryListItemResponse(DiaryEntry de) {
         return EntryListItemResponse.builder()
-                .entryId(de.getEntryId())
+                .entryId(de.getId())
                 .subtitle(de.getSubtitle())
                 .createdTime(de.getCreatedAt())
                 .build();
@@ -112,7 +112,7 @@ public class ChapterService {
     /**
      * 여행 기간 포맷팅 헬퍼 메서드
      */
-    private String formatTravelPeriod(TravelChapter tc) {
+    private String formatTravelPeriod(TripChapter tc) {
         if (tc.getStartDate() != null && tc.getEndDate() != null) {
             return tc.getStartDate().toString() + " - " + tc.getEndDate().toString();
         }

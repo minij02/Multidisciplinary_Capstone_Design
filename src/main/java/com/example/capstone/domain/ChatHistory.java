@@ -23,7 +23,7 @@ public class ChatHistory {
     // N:1 관계: 일기 항목
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entry_id", nullable = false)
-    private DailyEntry entry;
+    private DiaryEntry entry;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sender_type", nullable = false, length = 10)

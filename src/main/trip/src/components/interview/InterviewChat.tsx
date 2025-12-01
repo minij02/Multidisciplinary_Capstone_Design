@@ -88,7 +88,7 @@ const InterviewChat: React.FC = () => {
 
     try {
       // (API 호출 #2) 채팅 메시지 저장
-      await axios.post(`/api/diary/entry/${diaryEntryId}/chat`, chatDto);
+      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/chat`, chatDto);
 
       // API 저장 성공 시 프론트 UI에 반영
       addMessageToChatUI('user', message);
@@ -147,7 +147,7 @@ const InterviewChat: React.FC = () => {
 
     try {
       // (API 호출 #3) Spring AI 분석 요청
-      await axios.post(`/api/diary/entry/${diaryEntryId}/analyze`);
+      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/analyze`);
 
       // 분석 성공! 다음 페이지(이미지 선택)로 이동
       navigate(`/diary/select-image/${diaryEntryId}`);

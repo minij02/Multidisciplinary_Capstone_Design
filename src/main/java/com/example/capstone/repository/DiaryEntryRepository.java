@@ -1,29 +1,48 @@
 package com.example.capstone.repository;
 
-import com.example.capstone.domain.DailyEntry;
 import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.domain.TripChapter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface DiaryEntryRepository extends JpaRepository<DiaryEntry, Long> {
-    // (필요시) 특정 챕터에 속한 모든 일기 항목 찾기
+    // (기존) 특정 챕터에 속한 모든 일기 항목 찾기
     List<DiaryEntry> findByTripChapter(TripChapter tripChapter);
 
-     /**
-     * 특정 사용자 ID와 Entry ID를 기준으로 일기 항목과 첨부된 미디어를 조회합니다.
-     * Fetch Join을 사용하여 N+1 문제를 방지하고, 인가(Authorization)를 동시에 수행합니다.
-     * @param entryId 일기 항목 ID
-     * @param userId 현재 로그인한 사용자 ID (인가용)
-     * @return DailyEntry 엔티티 (Optional)
+    /**
+     * 통합 및 수정됨:
+     * 특정 사용자 ID와 Entry ID를 기준으로 일기 항목과 첨부 파일(attachedFiles)을 조회합니다.
+     * 대상 엔티티: DailyEntry -> DiaryEntry
+     * 필드 변경: chapter -> tripChapter, media -> attachedFiles
      */
-    @Query("SELECT de FROM DailyEntry de " +
-           "JOIN FETCH de.chapter tc " + // Chapter 정보도 함께 로드
-           "LEFT JOIN FETCH de.media em " + // 미디어 정보도 함께 로드 (만약 DailyEntry에 'media' 필드가 있다면)
-           "WHERE de.id = :entryId AND tc.user.userId = :userId")
-    Optional<DailyEntry> findByIdAndUserId(@Param("entryId") Long entryId, @Param("userId") Long userId);
+    @Query("SELECT de FROM DiaryEntry de " +
+            "JOIN FETCH de.tripChapter tc " +        // tripChapter 정보 함께 로드
+            "LEFT JOIN FETCH de.attachedFiles af " + // attachedFiles 정보 함께 로드
+            "WHERE de.id = :entryId AND tc.user.userId = :userId")
+    Optional<DiaryEntry> findByIdAndUserId(@Param("entryId") Long entryId, @Param("userId") Long userId);
+    
+    /**
+     * DailyEntryRepository에서 이동됨:
+     * 특정 사용자의 모든 일기 작성 날짜를 조회하는 쿼리 (달력용)
+     * 필드 변경: entryDate -> date, chapter -> tripChapter
+     */
+    @Query("SELECT de.date FROM DiaryEntry de " +
+           "JOIN de.tripChapter tc " +
+           "WHERE tc.user.userId = :userId")
+    List<LocalDate> findDiaryDatesByUserId(@Param("userId") Long userId);
+
+    /**
+     * DailyEntryRepository에서 이동됨:
+     * 특정 사용자가 작성한 총 일기 수를 세는 메서드
+     * 필드 변경: chapter -> tripChapter
+     */
+    @Query("SELECT COUNT(de) FROM DiaryEntry de " +
+           "JOIN de.tripChapter tc " +
+           "WHERE tc.user.userId = :userId")
+    Long countAllByUserId(@Param("userId") Long userId);
 }

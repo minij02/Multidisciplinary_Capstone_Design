@@ -23,7 +23,7 @@ public class EntryMedia {
     // N:1 관계: 세부 일기 항목
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entry_id", nullable = false)
-    private DailyEntry entry;
+    private DiaryEntry entry;
 
     @Column(name = "file_url", nullable = false, length = 512)
     private String fileUrl; // 파일 저장 경로 URL
