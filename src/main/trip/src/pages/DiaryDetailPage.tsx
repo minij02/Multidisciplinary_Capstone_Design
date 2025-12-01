@@ -282,6 +282,13 @@ const DiaryDetailPage: React.FC = () => {
         }
     };
 
+      // ★★★ [신규] 다시 채팅하기 버튼 클릭 핸들러 ★★★
+    const handleReChatClick = () => {
+        if (diary) {
+            navigate(`/interview/${diary.entryId}`);
+        }
+    };
+    
     // -------------------------------------------------------------------------
     // 렌더링
     // -------------------------------------------------------------------------
@@ -406,10 +413,11 @@ const DiaryDetailPage: React.FC = () => {
                 </div>
             </main>
 
-            {/* 3. 하단 액션 버튼 (수정 중에는 숨김) */}
+             {/* 3. 하단 액션 버튼 (수정 중에는 숨김) */}
             {!isEditing && (
                 <footer className="detail-footer">
-                    <button className="chat-action-btn">
+                    {/* ★★★ onClick 핸들러 연결됨 ★★★ */}
+                    <button className="chat-action-btn" onClick={handleReChatClick}>
                         <MessageCircle size={18} />
                         <span>다시 채팅하기</span>
                     </button>

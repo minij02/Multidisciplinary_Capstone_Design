@@ -1,11 +1,27 @@
-/* 1. .global-container: 전체 화면을 채우고 내부 요소를 중앙에 배치 */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* ★ 핵심: 브라우저 전체 스크롤을 막습니다 */
+  background-color: #f3f4f6;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 1. Global Container: 화면 중앙 정렬용 컨테이너 */
+/* ---------------------------------------------------------------------- */
 .global-container {
-    min-height: 100vh;
-    background-color: #f3f4f6;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    padding: 0;
+  width: 100%;
+  height: 100vh; /* 화면 전체 높이 */
+  background-color: #f3f4f6; /* 데스크탑 배경색 */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  
+  /* 컨테이너 자체 스크롤 방지 */
+  overflow: hidden; 
 }
 
 /* 2. .mobile-frame: 모바일 뷰포트 크기 및 디자인 제한 */
@@ -17,7 +33,9 @@
     
     display: flex;
     flex-direction: column; 
-    overflow: hidden;
+     /* ★ 핵심: 프레임을 벗어나는 내용은 잘라내고, 내부는 자식요소(DiaryPage)가 스크롤 처리함 */
+    overflow: hidden; 
+    position: relative;
 
     /* 모바일 뷰포트 제한 스타일 */
     max-width: 390px;

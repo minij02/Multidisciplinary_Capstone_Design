@@ -2,6 +2,7 @@ package com.example.capstone.controller;
 
 import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.dto.ChatMessageRequest;
+import com.example.capstone.dto.ChatMessageResponse;
 import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.DiaryDetailResponse;
 import com.example.capstone.dto.DiaryUpdateRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -132,6 +134,29 @@ public class DiaryController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "일기 수정 중 오류가 발생했습니다.");
+        }
+    }
+
+     /**
+     * 6. 채팅 기록 조회 (수정됨: userId 검증 추가)
+     * GET /api/diary/entry/{entryId}/chat
+     */
+    @GetMapping("/entry/{entryId}/chat")
+    public ResponseEntity<List<ChatMessageResponse>> getChatHistory(
+            @PathVariable Long entryId,
+            Authentication authentication // 인증 객체 추가
+    ) {
+        // 1. 현재 로그인한 사용자 ID 획득
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        Long userId = principalDetails.getUser().getUserId();
+
+        try {
+            // 2. 서비스에 userId도 함께 전달하여 권한 체크 수행
+            List<ChatMessageResponse> history = diaryService.getChatHistory(entryId, userId);
+            return new ResponseEntity<>(history, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // 권한이 없거나 일기가 없는 경우 403 Forbidden 반환
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         }
     }
 }

@@ -2,10 +2,12 @@ package com.example.capstone.service;
 
 import com.example.capstone.domain.*; // 모든 Entity import
 import com.example.capstone.dto.ChatMessageRequest;
+import com.example.capstone.dto.ChatMessageResponse;
 import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.DiaryDetailResponse;
 import com.example.capstone.dto.DiaryUpdateRequest;
 import com.example.capstone.repository.*; // 모든 Repository import
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -86,6 +88,8 @@ public class DiaryService {
 
         // 1. 여행 챕터 생성 (프론트에서 받은 정보)
         TripChapter chapter = new TripChapter();
+         // ★★★ [수정됨] 고유 Key 생성 및 설정 (누락되었던 부분) ★★★
+        chapter.setKey(UUID.randomUUID().toString());
         chapter.setTitle(dto.getDiaryTitle());
         chapter.setStartDate(dto.getStartDate());
         chapter.setEndDate(dto.getEndDate());
@@ -240,6 +244,7 @@ public class DiaryService {
 
         // 3. DTO로 변환 및 반환
         return DiaryDetailResponse.builder()
+                .entryId(entry.getId())
                 .subtitle(entry.getSubtitle())
                 .content(entry.getContent())
                 
@@ -287,5 +292,32 @@ public class DiaryService {
 
         // JPA 변경 감지(Dirty Checking)로 인해 save 호출 불필요하지만 명시적으로 호출
         return entry.getId();
+    }
+
+    /**
+     * [수정됨] 특정 일기의 채팅 기록 조회 (권한 체크 포함)
+     * @param diaryEntryId 일기 항목 ID
+     * @param userId 요청한 사용자 ID
+     */
+    @Transactional(readOnly = true)
+    public List<ChatMessageResponse> getChatHistory(Long diaryEntryId, Long userId) {
+        // 1. 일기 조회
+        DiaryEntry entry = diaryEntryRepository.findById(diaryEntryId)
+                .orElseThrow(() -> new IllegalArgumentException("일기 항목을 찾을 수 없습니다."));
+
+        // 2. 권한 검증: 일기의 챕터 작성자가 현재 사용자와 같은지 확인
+        if (!entry.getTripChapter().getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("해당 일기의 채팅 기록에 접근할 권한이 없습니다.");
+        }
+
+        // 3. 채팅 기록 조회 및 DTO 변환
+        return chatMessageRepository.findByDiaryEntry(entry).stream()
+                .map(chat -> ChatMessageResponse.builder()
+                        .id(chat.getId())
+                        .sender(chat.getSender())
+                        .message(chat.getMessage())
+                        .createdAt(chat.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

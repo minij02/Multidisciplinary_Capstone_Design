@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './InterviewChat.css';
 import { IoChevronBack } from 'react-icons/io5';
 import { FaMicrophone, FaStop, FaCheck, FaKeyboard } from 'react-icons/fa';
 import { IoSend } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
-import axios from 'axios'; // API 호출
+import axios from 'axios';
 
-// --- (getFormattedTime 함수) ---
-const getFormattedTime = () => {
-  const now = new Date();
+// -----------------------------------------------------------------------------
+// 1. Helper Functions
+// -----------------------------------------------------------------------------
+const getFormattedTime = (dateInput?: string | Date) => {
+  const now = dateInput ? new Date(dateInput) : new Date();
   let hours = now.getHours();
   const minutes = now.getMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -20,7 +21,9 @@ const getFormattedTime = () => {
   return `${hoursStr}:${minutesStr} ${ampm}`;
 };
 
-// --- (ChatMessage 인터페이스) ---
+// -----------------------------------------------------------------------------
+// 2. Types
+// -----------------------------------------------------------------------------
 interface ChatMessage {
   id: number;
   sender: 'user' | 'bot';
@@ -28,169 +31,186 @@ interface ChatMessage {
   time: string;
 }
 
-// --- (MicState 타입) ---
-type MicState = 'ready' | 'recording' | 'completed';
-
-// --- (컴포넌트 시작) ---
+// -----------------------------------------------------------------------------
+// 3. Component
+// -----------------------------------------------------------------------------
 const InterviewChat: React.FC = () => {
+  const { diaryEntryId } = useParams<{ diaryEntryId: string }>();
+  const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 진행률 (임시)
   const progressPercent = 65;
 
-  // ★ URL에서 diaryEntryId 가져오기
-  const { diaryEntryId } = useParams<{ diaryEntryId: string }>();
-
-  // ★ (수정) navigate는 여기서 "한 번"만 선언합니다.
-  const navigate = useNavigate();
-
-  // --- (훅 사용 및 state 선언) ---
-  const {
-    isListening,
-    transcript,
-    interimTranscript,
-    isSupported,
-    startListening,
-    stopListening,
-    clearTranscript
-  } = useSpeechRecognition();
-
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      sender: 'bot',
-      message: '오늘은 여행에서 가장 좋았던 일이나, 조금 아쉬웠던 일이 있으신가요?',
-      time: getFormattedTime(),
-    },
-  ]);
-  const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
+  // State
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputMode, setInputMode] = useState<'voice' | 'text'>('text'); // 기본 text 모드로 시작 (수정 시 편의)
   const [textInput, setTextInput] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // 로딩 상태
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-  // --- (메시지 UI 추가 공통 함수) ---
+  // 음성 인식 관련 (더미) - 실제 사용 시 useSpeechRecognition 훅 복구 필요
+  const isListening = false;
+  const transcript = "";
+  const interimTranscript = "";
+  const isSupported = true;
+  const startListening = () => alert("음성 인식 기능은 로컬 환경 설정이 필요합니다.");
+  const stopListening = () => {};
+  const clearTranscript = () => {};
+
+  // 스크롤 하단 이동
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // ★★★ [핵심] 기존 채팅 내역 불러오기 ★★★
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.get(`http://localhost:8080/api/diary/entry/${diaryEntryId}/chat`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+            // 백엔드 데이터를 프론트엔드 포맷으로 변환
+            const formattedHistory: ChatMessage[] = response.data.map((msg: any) => ({
+                id: msg.id,
+                sender: msg.sender, // 'user' or 'bot'
+                message: msg.message,
+                time: getFormattedTime(msg.createdAt)
+            }));
+
+            // 초기 봇 메시지가 없다면 하나 추가해줄 수도 있음
+            if (formattedHistory.length === 0) {
+                formattedHistory.push({
+                    id: 0,
+                    sender: 'bot',
+                    message: '이어서 더 들려주고 싶은 이야기가 있나요?',
+                    time: getFormattedTime()
+                });
+            }
+            
+            setMessages(formattedHistory);
+        }
+      } catch (error) {
+        console.error("채팅 내역 로드 실패:", error);
+        // 실패 시 기본 메시지
+        setMessages([{
+            id: 1, sender: 'bot', 
+            message: '이전 대화 내용을 불러오지 못했습니다. 새로운 이야기를 들려주세요.', 
+            time: getFormattedTime()
+        }]);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    if (diaryEntryId) {
+        fetchChatHistory();
+    }
+  }, [diaryEntryId]);
+
+
+  // 메시지 UI 추가
   const addMessageToChatUI = (sender: 'user' | 'bot', message: string) => {
     const newMessage: ChatMessage = {
-      id: messages.length + 1,
+      id: Date.now(), // 임시 ID
       sender: sender,
       message: message,
       time: getFormattedTime(),
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
-  // ★ 백엔드로 채팅 메시지를 "저장"하고 "팝업" 띄우기
+  // 메시지 저장 API 호출
   const saveChatMessageToApi = async (message: string) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const chatDto = { // ChatMessageRequestDto
-      sender: 'user',
-      message: message
-    };
-
     try {
-      // (API 호출 #2) 채팅 메시지 저장
-      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/chat`, chatDto);
+      const token = localStorage.getItem('accessToken');
+      // 1. 메시지 저장
+      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/chat`, 
+        { sender: 'user', message: message },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      // API 저장 성공 시 프론트 UI에 반영
+      // 2. UI 업데이트
       addMessageToChatUI('user', message);
-
-      // "메시지 1회 전송 -> 즉시 팝업" 플로우
+      
+      // 3. 모달 띄우기 (또는 봇 응답 대기 로직 추가 가능)
       setShowConfirmModal(true);
 
     } catch (error) {
-      console.error("채팅 메시지 저장 실패:", error);
-      alert("메시지 전송에 실패했습니다.");
+      console.error("메시지 저장 실패:", error);
+      alert("메시지 전송 실패");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // [✓] 음성 전송
-  const handleSpeechSubmit = () => {
-    if (!transcript) return;
-    saveChatMessageToApi(transcript); // ★ API 호출
-  };
-
-  // [▶] 텍스트 전송
-  const handleTextSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  // 텍스트 전송 핸들러
+  const handleTextSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!textInput.trim()) return;
-    saveChatMessageToApi(textInput); // ★ API 호출
+    saveChatMessageToApi(textInput);
     setTextInput('');
   };
 
-  // --- (나머지 핸들러 함수들) ---
-  const handleStartRecording = () => {
-    if (!isSupported) { alert("음성 인식을 지원하지 않습니다."); return; }
-    startListening();
+  // 음성 전송 핸들러 (더미 연결)
+  const handleSpeechSubmit = () => {
+    if (transcript) saveChatMessageToApi(transcript);
   };
-  const handleStopRecording = () => { stopListening(); };
 
-  // ★ "취소" 버튼 (삭제 기능)
+  // 취소 (모달 닫기)
   const handleCancelEdit = () => {
-    setShowConfirmModal(false); // 1. 팝업 닫기
-
-    setMessages(prevMessages => {
-      if (prevMessages.length > 1) { // 봇 메시지(1개)보다 많을 때
-        return prevMessages.slice(0, -1); // 마지막 'user' 메시지 삭제
-      }
-      return prevMessages;
-    });
-
-    // 3. 음성인식 [✓] 버튼을 [🎤]로 되돌리기
-    clearTranscript();
+    setShowConfirmModal(false);
   };
 
-  // ★ "편집 완료" 버튼 (AI 분석 요청)
+  // ★ [일기 업데이트] 편집 완료 (AI 재분석 요청)
   const handleConfirmEdit = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
-      // (API 호출 #3) Spring AI 분석 요청
-      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/analyze`);
+      const token = localStorage.getItem('accessToken');
+      
+      // AI 분석 요청 (기존 + 새 채팅 내용을 바탕으로 덮어쓰기됨)
+      await axios.post(`http://localhost:8080/api/diary/entry/${diaryEntryId}/analyze`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
 
-      // 분석 성공! 다음 페이지(이미지 선택)로 이동
-      navigate(`/diary/select-image/${diaryEntryId}`);
+      alert("일기가 업데이트되었습니다!");
+      // 업데이트 후 상세 페이지로 이동
+      navigate(`/diary/${diaryEntryId}`);
 
     } catch (error) {
       console.error("AI 분석 요청 실패:", error);
-      alert("일기 생성에 실패했습니다.");
+      alert("일기 업데이트에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
       setShowConfirmModal(false);
     }
   };
 
-  // --- (하단 푸터 렌더링 함수) ---
+  // --- Render Footer ---
   const renderFooter = () => {
     if (inputMode === 'voice') {
-      let button;
-      if (isListening) {
-        button = (
-          <button className="mic-button recording" onClick={handleStopRecording} aria-label="녹음 중지">
-            <FaStop />
-          </button>
-        );
-      } else if (!isListening && transcript) {
-        button = (
-          <button className="mic-button completed" onClick={handleSpeechSubmit} aria-label="확인">
-            <FaCheck />
-          </button>
-        );
-      } else {
-        button = (
-          <button className="mic-button" onClick={handleStartRecording} aria-label="음성 녹음 시작" disabled={!isSupported}>
-            <FaMicrophone />
-          </button>
-        );
-      }
       return (
         <div className="chat-footer-voice">
           <button className="toggle-mode-button" onClick={() => setInputMode('text')}>
             <FaKeyboard />
           </button>
           <div className="voice-button-container">
-            {button}
+             <button className="mic-button" onClick={startListening}>
+                <FaMicrophone />
+             </button>
           </div>
           <div className="toggle-mode-button-placeholder"></div>
         </div>
@@ -206,7 +226,7 @@ const InterviewChat: React.FC = () => {
           className="text-input"
           value={textInput}
           onChange={(e) => setTextInput(e.target.value)}
-          placeholder="메시지 입력..."
+          placeholder="이어서 대화하기..."
           autoFocus
         />
         <button className="send-button" type="submit" disabled={isSubmitting}>
@@ -216,32 +236,29 @@ const InterviewChat: React.FC = () => {
     );
   };
 
+  if (isLoadingHistory) {
+      return <div className="loading-screen">대화 내역을 불러오는 중...</div>;
+  }
+
   return (
     <div className="interview-page">
-
-      {/* (헤더: "완료" 버튼이 없는 원래 버전) */}
+      {/* Header */}
       <header className="chat-header">
         <div className="header-icon left" onClick={() => navigate(-1)}>
           <IoChevronBack />
         </div>
         <div className="header-title-container">
           <h1>Interview chat</h1>
-          <p className="subtitle">{progressPercent}% completed</p>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
+          <p className="subtitle">이어서 대화하기</p>
         </div>
         <div className="header-icon right"></div>
       </header>
 
-      {/* (메인 채팅) */}
+      {/* Body */}
       <main className="chat-body">
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
           <div
-            key={msg.id}
+            key={msg.id || index}
             className={`message-group ${msg.sender === 'user' ? 'sent' : 'received'}`}
           >
             <div className="chat-bubble">
@@ -250,30 +267,24 @@ const InterviewChat: React.FC = () => {
             <span className="timestamp">{msg.time}</span>
           </div>
         ))}
-        {interimTranscript && (
-          <div className="message-group sent">
-            <div className="chat-bubble interim">
-              <p>{interimTranscript}...</p>
-            </div>
-          </div>
-        )}
+        <div ref={messagesEndRef} />
       </main>
 
-      {/* (하단 푸터) */}
+      {/* Footer */}
       <footer className="chat-footer">
         {renderFooter()}
       </footer>
 
-      {/* (팝업 모달) */}
+      {/* Modal */}
       {showConfirmModal && (
         <div className="modal-backdrop">
           <div className="modal-content">
-            <h3>일기편집을 완료할까요?</h3>
-            <p>편집을 완료하면 사진을 추가할 수 있습니다.</p>
+            <h3>대화를 마칠까요?</h3>
+            <p>추가된 대화 내용으로 일기를 업데이트합니다.</p>
             <div className="modal-buttons">
-              <button onClick={handleCancelEdit} className="btn-cancel">취소</button>
+              <button onClick={handleCancelEdit} className="btn-cancel">더 대화하기</button>
               <button onClick={handleConfirmEdit} className="btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? "분석 중..." : "편집완료"}
+                {isSubmitting ? "업데이트 중..." : "일기 수정완료"}
               </button>
             </div>
           </div>

@@ -228,21 +228,24 @@ const MainPage: React.FC = () => {
                 </div>
             </main>
 
-            <footer className="bottom-nav-footer">
-                <div className="nav-group">
-                    <div className="nav-item">
-                        <BookOpen size={24} />
-                        <span>일기페이지</span>
-                    </div>
-                    <div className="nav-item-center">
-                        <div className="home-button-bubble"><Home size={32} /></div>
-                    </div>
-                    <div className="nav-item">
-                        <Search size={24} />
-                        <span>마이페이지</span>
-                    </div>
-                </div>
-            </footer>
+             {/* 3. 하단 네비게이션 (고정됨) */}
+                        <footer className="bottom-nav-footer">
+                            <div className="nav-group">
+                                <div className="nav-item nav-item-active" onClick={() => navigate('/diary')}>
+                                    <BookOpen size={24} />
+                                    <span>일기페이지</span>
+                                </div>
+                                <div className="nav-item-center" onClick={() => navigate('/main')}>
+                                    <div className="home-button-bubble">
+                                        <Home size={32} className="home-icon" />
+                                    </div>
+                                </div>
+                                <div className="nav-item">
+                                    <Search size={24} />
+                                    <span>마이페이지</span>
+                                </div>
+                            </div>
+                        </footer>
         </div>
     );
 };
