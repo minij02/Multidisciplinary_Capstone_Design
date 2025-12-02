@@ -1,6 +1,7 @@
 package com.example.capstone.controller;
 
 import com.example.capstone.dto.ChapterListResponse;
+import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.NewChapterRequest;
 import com.example.capstone.service.ChapterService;
 import jakarta.validation.Valid;
@@ -67,6 +68,28 @@ public class ChapterController {
         } catch (Exception e) {
             // 사용자 정보를 찾지 못했거나 기타 오류 발생 시
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+     /**
+     * [신규] 기존 챕터에 새 일기 항목 추가
+     * POST /api/chapters/{chapterId}/diary
+     */
+    @PostMapping("/{chapterId}/diary")
+    public ResponseEntity<Long> addEntryToChapter(
+            @PathVariable Long chapterId,
+            @RequestBody DiaryCreateRequest request, // 기존 DTO 재활용
+            Authentication authentication
+    ) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Long userId = principal.getUser().getUserId();
+
+        try {
+            // 서비스 메서드 호출 (아래에서 구현)
+            Long entryId = chapterService.addEntryToExistingChapter(userId, chapterId, request);
+            return new ResponseEntity<>(entryId, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

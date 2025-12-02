@@ -110,6 +110,22 @@ const DiaryPage: React.FC = () => {
         loadData();
     }, [fetchChapterList]);
 
+    // [핸들러] 챕터에 새 일기 추가하기 버튼 클릭
+    const handleAddEntryToChapter = (chapter: ChapterList) => {
+        // 모든 챕터 속성을 state에 담아 DiaryWrite로 전달 (초기값으로 사용)
+        navigate('/diary/write', {
+            state: {
+                chapterId: chapter.chapterId,     
+                diaryTitle: chapter.title, // 챕터 제목을 일기 제목의 힌트로 사용
+                arrivalCity: chapter.title.split(',').pop()?.trim() || '도착지', // 예시 파싱
+                startDate: chapter.travelPeriod.split(' ~ ')[0]?.trim(), 
+                endDate: chapter.travelPeriod.split(' ~ ')[1]?.trim(), 
+                // DB에서 받아온 tripNights, tripDays, totalCost 등의 정보도 여기에 추가해야 완벽함
+                // 현재 Mock Data는 해당 필드를 가지지 않아 임시로 생략
+            }
+        });
+    };
+
     if (loading) {
         return (
             <div className="diary-page-container">
@@ -148,7 +164,12 @@ const DiaryPage: React.FC = () => {
                             <p className="chapter-subtitle">현재 진행하고 있는 챕터</p>
                             <div className="chapter-card-content">
                                 <h2 className="chapter-title">Chapter 1: {currentChapter.title}</h2>
-                                <Send className="card-action-icon" size={20} />
+                                 {/* 챕터 카드 클릭 시 해당 챕터에 바로 일기 추가 페이지로 이동 */}
+                                <Send 
+                                    className="card-action-icon" 
+                                    size={20} 
+                                    onClick={() => handleAddEntryToChapter(currentChapter)}
+                                />
                             </div>
                         </div>
                     </div>
@@ -164,18 +185,24 @@ const DiaryPage: React.FC = () => {
 
                             <div className="timeline-entries-container">
                                 <div className="timeline-line"></div>
+
                                 {chapter.entries.map((entry, entryIndex) => (
                                     <div key={entry.entryId} className="timeline-entry">
                                         <div className="timeline-dot"></div>
                                         <div 
                                             className="entry-card"
                                             onClick={() => navigate(`/diary/${entry.entryId}`)}
+                                            style={{ cursor: 'pointer' }}
                                         >
-                                            <h3 className="entry-title">Chapter {index + 1}.{entryIndex + 1}</h3>
+                                            <h3 className="entry-title">
+                                                Chapter {index + 1}.{entryIndex + 1}
+                                            </h3>
                                             <p className="entry-subtitle">{entry.subtitle || "제목 없음"}</p>
+                                            
                                             <div className="entry-meta">
                                                 <Clock size={12} className="entry-meta-icon" />
                                                 <span>{formatTimeAgo(entry.createdTime)}</span>
+                                                
                                                 {entry.subtitle && entry.subtitle.includes("작성하지 않은") && (
                                                     <Edit2 size={12} className="entry-meta-icon edit-icon" />
                                                 )}
@@ -183,6 +210,28 @@ const DiaryPage: React.FC = () => {
                                         </div>
                                     </div>
                                 ))}
+
+                                {/* ★★★ [추가됨] 타임라인 마지막에 '새 글 쓰기' 버튼 추가 ★★★ */}
+                                <div className="timeline-entry">
+                                    <div className="timeline-dot" style={{ borderColor: '#9ca3af', backgroundColor: '#f3f4f6' }}></div>
+                                    <div 
+                                        className="entry-card"
+                                        onClick={() => handleAddEntryToChapter(chapter)}
+                                        style={{ 
+                                            cursor: 'pointer', 
+                                            border: '2px dashed #e5e7eb', 
+                                            boxShadow: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: '12px',
+                                            color: '#9ca3af'
+                                        }}
+                                    >
+                                        <span style={{ fontSize: '14px', fontWeight: 600 }}>+ 이 챕터에 일기 추가하기</span>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     ))}
@@ -201,7 +250,7 @@ const DiaryPage: React.FC = () => {
                             <Home size={32} className="home-icon" />
                         </div>
                     </div>
-                    <div className="nav-item">
+                    <div className="nav-item" onClick={() => navigate('/mypage')}>
                         <Search size={24} />
                         <span>마이페이지</span>
                     </div>

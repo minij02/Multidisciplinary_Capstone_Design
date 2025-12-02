@@ -12,6 +12,7 @@ import DiaryWrite from './components/diary/DiaryWrite';
 import DiaryDetailPage from './pages/DiaryDetailPage';
 import InterviewChat from './components/interview/InterviewChat';
 import ImageGallery from './components/gallery/ImageGallery';
+import MyPage from './pages/MyPage';
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "diary/select-image/:diaryEntryId", // 이미지 선택 페이지
         element: <ImageGallery />,
+      },
+      {
+        path: "mypage", // 마이페이지
+        element: <MyPage />,
       },
     ],
   },

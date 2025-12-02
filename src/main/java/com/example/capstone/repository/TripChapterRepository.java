@@ -19,6 +19,6 @@ public interface TripChapterRepository extends JpaRepository<TripChapter, Long> 
     @Query("SELECT DISTINCT tc FROM TripChapter tc " +
            "LEFT JOIN FETCH tc.diaryEntries de " + // TripChapter의 필드명 'diaryEntries' 사용
            "WHERE tc.user.userId = :userId " +
-           "ORDER BY tc.createdAt ASC, de.createdAt DESC") 
+           "ORDER BY tc.updatedAt DESC, de.createdAt ASC") 
     List<TripChapter> findAllWithEntriesByUserId(@Param("userId") Long userId);
 }

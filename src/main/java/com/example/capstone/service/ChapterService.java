@@ -5,8 +5,10 @@ import com.example.capstone.domain.DiaryEntry;
 import com.example.capstone.domain.TripChapter;
 import com.example.capstone.domain.User;
 import com.example.capstone.dto.ChapterListResponse;
+import com.example.capstone.dto.DiaryCreateRequest;
 import com.example.capstone.dto.EntryListItemResponse;
 import com.example.capstone.dto.NewChapterRequest;
+import com.example.capstone.repository.DiaryEntryRepository;
 import com.example.capstone.repository.OnboardingQuestionRepository;
 import com.example.capstone.repository.TripChapterRepository;
 import com.example.capstone.repository.UserRepository;
@@ -24,6 +26,7 @@ public class ChapterService {
 
     private final TripChapterRepository tripChapterRepository;
     private final OnboardingQuestionRepository onboardingQuestionRepository;
+    private final DiaryEntryRepository diaryEntryRepository;
     private final UserRepository userRepository;
 
     /**
@@ -125,5 +128,33 @@ public class ChapterService {
              return tc.getStartDate().toString() + " - 진행 중";
         }
         return "기간 미정";
+    }
+
+     /**
+     * [신규] 기존 챕터에 새 일기 항목을 추가합니다.
+     */
+    @Transactional
+    public Long addEntryToExistingChapter(Long userId, Long chapterId, DiaryCreateRequest request) {
+        // 1. 챕터 조회 및 권한 확인
+        TripChapter chapter = tripChapterRepository.findById(chapterId)
+                .orElseThrow(() -> new IllegalArgumentException("챕터를 찾을 수 없습니다."));
+        
+        if (!chapter.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        // 2. 새 일기 생성
+        DiaryEntry entry = new DiaryEntry();
+        entry.setTripChapter(chapter); // 기존 챕터 연결
+        entry.setDate(request.getStartDate()); // 일기 날짜
+        entry.setSubtitle(request.getDiaryTitle()); // 제목
+        entry.setContent("... AI 분석 대기 중 ...");
+        entry.setCreationMethod("chat");
+        
+        // 3. 챕터의 수정 시간 갱신 (선택 사항: JPA Auditing이 챕터 변경을 감지하지 못할 경우 명시적 업데이트)
+        // chapter.setUpdatedAt(LocalDateTime.now()); 
+
+        DiaryEntry savedEntry = diaryEntryRepository.save(entry);
+        return savedEntry.getId();
     }
 }

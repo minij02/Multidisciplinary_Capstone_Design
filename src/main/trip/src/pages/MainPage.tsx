@@ -240,7 +240,7 @@ const MainPage: React.FC = () => {
                                         <Home size={32} className="home-icon" />
                                     </div>
                                 </div>
-                                <div className="nav-item">
+                                <div className="nav-item" onClick={() => navigate('/mypage')}>
                                     <Search size={24} />
                                     <span>마이페이지</span>
                                 </div>
