@@ -17,10 +17,9 @@ public class AttachedFile extends BaseTimeEntity {
     @Column(name = "attached_file_id") // "미디어 아이디" -> "attached_file_id"
     private Long id;
 
-    // ★★★ [수정됨] VARCHAR(1000) 대신 TEXT 타입 지정 (Data Truncation 해결) ★★★
-    @Column(name = "file_url", columnDefinition = "TEXT", nullable = false) 
+    @Lob 
+    @Column(name = "file_url", columnDefinition = "LONGTEXT", nullable = false) 
     private String fileUrl;
-
     @Column(name = "media_type", nullable = false) // "미디어 타입" -> "media_type"
     private String mediaType; // "image", "video", "audio" etc.
 
