@@ -23,7 +23,7 @@ public class DiaryEntry extends BaseTimeEntity { // (생성일/수정일 상속)
     @Column(name = "date", nullable = false) // "일기 해당 날짜" -> "date"
     private LocalDate date;
 
-    @Column(name = "subtitle") // "소제목" -> "subtitle"
+    @Column(name = "subtitle", nullable = false) // "소제목" -> "subtitle"
     private String subtitle;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false) // "일기 본문" -> "content"

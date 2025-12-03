@@ -269,6 +269,10 @@ public class DiaryService {
         DiaryEntry entry = diaryEntryRepository.findByIdAndUserId(entryId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 일기를 찾을 수 없거나 수정 권한이 없습니다."));
 
+        if (request.getSubtitle() != null) {
+        entry.setSubtitle(request.getSubtitle());
+        }
+
         // 2. 본문 내용 수정
         if (request.getContent() != null) {
             entry.setContent(request.getContent());

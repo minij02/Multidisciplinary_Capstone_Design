@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DiaryUpdateRequest {
+    private String subtitle;
     private String content; // 수정할 본문 내용
     
     // 실제 파일 업로드는 MultipartFile로 처리해야 하지만, 

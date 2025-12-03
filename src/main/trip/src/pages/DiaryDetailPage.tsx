@@ -58,6 +58,20 @@ const styles = `
   .diary-subtitle { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: #222; line-height: 1.4; }
   .diary-text { font-size: 15px; line-height: 1.8; color: #444; text-align: justify; margin-bottom: 30px; white-space: pre-line; }
 
+  .edit-subtitle-input {
+    width: 100%;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #222;
+    line-height: 1.4;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    outline-color: #ec4899;
+    font-family: inherit;
+  }
+
   /* 편집 모드 텍스트 영역 */
   .edit-textarea {
     width: 100%; min-height: 200px; padding: 12px;
@@ -127,6 +141,7 @@ const DiaryDetailPage: React.FC = () => {
 
     // 수정 모드 상태
     const [isEditing, setIsEditing] = useState(false);
+    const [editSubtitle, setEditSubtitle] = useState(''); 
     const [editContent, setEditContent] = useState(''); // 수정 중인 텍스트
     const [editImagePreview, setEditImagePreview] = useState<string | null>(null); // 수정 중인 이미지 미리보기
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -185,6 +200,7 @@ const DiaryDetailPage: React.FC = () => {
                     const data = await response.json();
                     setDiary(data);
                     // 초기 수정 상태 설정
+                    setEditSubtitle(data.subtitle || '');
                     setEditContent(data.content);
                     if (data.mediaUrls && data.mediaUrls.length > 0) {
                         setEditImagePreview(data.mediaUrls[0]);
@@ -212,6 +228,7 @@ const DiaryDetailPage: React.FC = () => {
     const handleEditClick = () => {
         setIsEditing(true);
         if (diary) {
+            setEditSubtitle(diary.subtitle || '');
             setEditContent(diary.content);
             setEditImagePreview(diary.mediaUrls[0] || null);
         }
@@ -222,6 +239,7 @@ const DiaryDetailPage: React.FC = () => {
         setIsEditing(false);
         // 원래 데이터로 복구 (상태만 리셋)
         if (diary) {
+            setEditSubtitle(diary.subtitle || '');
             setEditContent(diary.content);
             setEditImagePreview(diary.mediaUrls[0] || null);
         }
@@ -246,11 +264,17 @@ const DiaryDetailPage: React.FC = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('accessToken');
+
+            // [추가] 소제목이 필수(Non-nullable)이므로 빈 문자열로 전송
+             const finalSubtitle = editSubtitle.trim() === '' ? '' : editSubtitle.trim();
+            // [추가] 본문 내용도 필수이므로 검사
+             const finalContent = editContent.trim();
             
             // 실제 파일 업로드는 백엔드 로직에 따라 FormData를 써야 하지만,
             // 여기서는 Base64 문자열 또는 URL을 보낸다고 가정 (간소화)
             const payload = {
-                content: editContent,
+                subtitle: finalSubtitle,
+                content: finalContent,
                 imageUrl: editImagePreview // 실제로는 파일 업로드 API 호출 후 URL을 받아야 함
             };
 
@@ -267,7 +291,8 @@ const DiaryDetailPage: React.FC = () => {
                 // 성공 시 로컬 상태 업데이트 및 수정 모드 종료
                 setDiary(prev => prev ? ({ 
                     ...prev, 
-                    content: editContent,
+                    subtitle: finalSubtitle,
+                    content: finalContent,
                     mediaUrls: editImagePreview ? [editImagePreview] : prev.mediaUrls 
                 }) : null);
                 setIsEditing(false);
@@ -385,7 +410,17 @@ const DiaryDetailPage: React.FC = () => {
                     )}
                 </div>
 
-                <h3 className="diary-subtitle">{diary.subtitle}</h3>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        className="edit-subtitle-input"
+                        value={editSubtitle}
+                        onChange={(e) => setEditSubtitle(e.target.value)}
+                        placeholder="소제목을 입력해주세요 (필수)"
+                    />
+                ) : (
+                    <h3 className="diary-subtitle">{diary.subtitle}</h3>
+                )}
 
                 {/* 텍스트 영역: 수정 모드에 따라 분기 */}
                 <div className="diary-text">
