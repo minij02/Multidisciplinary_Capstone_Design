@@ -79,14 +79,16 @@ const DiaryWrite: React.FC = () => {
   // ---------------------------------------------------------------------------
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
-  // 시작일: [★ 수정됨] parseDateString 함수 사용하여 초기화
-  const [startDate, setStartDate] = useState<Date | null>(
-    parseDateString(state.startDate) || new Date()
-  );
-  // 종료일: [★ 수정됨] parseDateString 함수 사용하여 초기화
-  const [endDate, setEndDate] = useState<Date | null>(
-    parseDateString(state.endDate) || new Date()
-  );
+ // 시작일: [★ 수정됨] parseDateString 함수 사용하여 초기화
+  const initialStartDate = parseDateString(state.startDate) || new Date();
+  const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
+  
+  // 종료일: [★ 수정됨] parseDateString 함수 사용하여 초기화
+  const initialEndDate = parseDateString(state.endDate) || new Date();
+  const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
+
+  // 💡 [추가] 일기 항목의 날짜 (여행 시작일로 초기화)
+  const [diaryDate, setDiaryDate] = useState<Date | null>(initialStartDate);
 
   // 도시 정보 (DepartureCity는 null일 경우 빈 문자열로 초기화)
   const [departureCity, setDepartureCity] = useState(state.departureCity || '');
@@ -112,7 +114,13 @@ const DiaryWrite: React.FC = () => {
     const duration = calculateDuration(startDate, endDate);
     setTripNights(duration.nights);
     setTripDays(duration.days);
-  }, [startDate, endDate]);
+    if (startDate && diaryDate && diaryDate < startDate) {
+        setDiaryDate(startDate);
+    }
+    if (endDate && diaryDate && diaryDate > endDate) {
+        setDiaryDate(endDate);
+    }
+  }, [startDate, endDate, diaryDate]);
 
 
   const handleImageUploaderClick = () => { fileInputRef.current?.click(); };
@@ -134,6 +142,7 @@ const DiaryWrite: React.FC = () => {
     // 유효성 검사
     if (!diaryTitle.trim()) { alert('일기 제목을 입력해주세요.'); return; }
     if (!startDate || !endDate) { alert('여행 일정을 확인해주세요.'); return; }
+    if (!diaryDate) { alert('일기 날짜를 선택해주세요.'); return; } 
     if (startDate && endDate && startDate > endDate) { alert('여행 시작일은 종료일보다 이전이어야 합니다.'); return; }
     
     setIsLoading(true);
@@ -142,6 +151,7 @@ const DiaryWrite: React.FC = () => {
       diaryTitle: diaryTitle,
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
+      entryDate: formatDate(diaryDate),
       departureCity: departureCity,
       arrivalCity: arrivalCity,
       tripNights: parseInt(tripNights) || 0,
@@ -245,6 +255,25 @@ const DiaryWrite: React.FC = () => {
               <input type="text" value={arrivalCity} onChange={(e) => setArrivalCity(e.target.value)} placeholder="도착지" className="city-input input-base" />
             </div>
           </section>
+
+            {/* 💡 [추가] 일기 항목 날짜 선택 UI */}
+            <section className="card date-item-selection">
+                <label className="date-item-label">📝 일기 작성 날짜</label>
+                <div className="date-item-input-wrapper">
+                    <DatePicker 
+                        selected={diaryDate}
+                        onChange={(date: Date | null) => setDiaryDate(date)}
+                        dateFormat="yyyy.MM.dd"
+                        className="date-picker-input input-base"
+                        popperPlacement="bottom-start"
+                        portalId="calendar-portal-root"
+                        // 챕터 기간 내에서만 선택 가능하도록 제한
+                        minDate={startDate || undefined} 
+                        maxDate={endDate || undefined} 
+                        placeholderText="날짜를 선택해주세요"
+                    />
+                </div>
+            </section>
 
           {/* 2-3. 일기 내용 입력 */}
           <section className="card content-section">

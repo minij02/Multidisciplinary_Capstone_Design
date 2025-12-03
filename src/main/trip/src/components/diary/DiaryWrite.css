@@ -244,6 +244,35 @@ input[type='number'] {
   text-align: center; /* ★ 1. placeholder 중앙 정렬 */
 }
 
+/* 💡 [추가] 일기 항목 날짜 선택 섹션 스타일 */
+.date-item-selection {
+display: flex;
+flex-direction: column;
+gap: 10px;
+background: #ffffff;
+border-radius: 20px;
+padding: 20px;
+margin-bottom: 20px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.date-item-label {
+font-size: 0.9rem;
+font-weight: 600;
+color: #555;
+}
+.date-item-input-wrapper .date-picker-input {
+width: 100%;
+background: #eef5ff;
+color: #333;
+font-weight: 600;
+text-align: left;
+padding: 12px 15px;
+border-radius: 10px;
+}
+.date-item-input-wrapper .date-picker-input::placeholder {
+color: #999;
+}
+
 /* 2-3. 일기 내용 입력 */
 .content-section {
   padding: 14px;

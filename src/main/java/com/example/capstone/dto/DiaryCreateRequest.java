@@ -20,6 +20,7 @@ public class DiaryCreateRequest {
     // 2. DiaryWrite.tsx -> date-section
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate entryDate; 
     private String departureCity;
     private String arrivalCity;
 

@@ -104,7 +104,7 @@ public class DiaryService {
 
         // 2. 일기 항목 생성 (아직 본문은 비어있음)
         DiaryEntry entry = new DiaryEntry();
-        entry.setDate(dto.getStartDate()); // 예시: 시작일을 일기 날짜로
+        entry.setDate(dto.getEntryDate());
         entry.setTripChapter(savedChapter);
         entry.setContent("... AI 분석 대기 중 ...");
         entry.setCreationMethod(dto.getCreationMethod() != null ? dto.getCreationMethod() : "chat");
