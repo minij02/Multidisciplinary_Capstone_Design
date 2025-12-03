@@ -32,10 +32,10 @@ public class DiaryController {
      * (이 API는 챕터와 빈 일기 항목을 먼저 생성하고, 생성된 '일기 항목 ID'를 반환)
      */
     @PostMapping("/chapter")
-    public ResponseEntity<?> createDiaryChapter(@RequestBody DiaryCreateRequest dto) {
+    public ResponseEntity<?> createDiaryChapter(@RequestBody DiaryCreateRequest dto, Long userId ) {
         log.info("일기 챕터 생성 요청 받음: {}", dto);
         try {
-            DiaryEntry createdEntry = diaryService.createDiaryChapterAndEntry(dto);
+            DiaryEntry createdEntry = diaryService.createDiaryChapterAndEntry(dto, userId);
             // (간단하게, 생성된 챕터의 첫 번째 일기 항목 ID를 반환한다고 가정)
             Long diaryEntryId = createdEntry.getId();
             log.info("일기 챕터 생성 성공: diaryEntryId={}", diaryEntryId);

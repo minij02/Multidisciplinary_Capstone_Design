@@ -60,7 +60,7 @@ public class DiaryService {
      * (이 단계에서는 '일기 본문'이 비어있거나, 수동 입력한 내용이 들어옵니다)
      */
     @Transactional
-    public DiaryEntry createDiaryChapterAndEntry(DiaryCreateRequest dto) {
+    public DiaryEntry createDiaryChapterAndEntry(DiaryCreateRequest dto, Long userId) {
         log.info("createDiaryChapterAndEntry 호출됨: diaryTitle={}, startDate={}, endDate={}", 
                 dto.getDiaryTitle(), dto.getStartDate(), dto.getEndDate());
         
@@ -82,9 +82,9 @@ public class DiaryService {
             throw new RuntimeException("여행 시작일은 종료일보다 이전이어야 합니다.");
         }
 
-        // (실제로는 SecurityContext에서 User를 가져와야 합니다)
-        log.info("더미 유저 조회 시작");
-        User dummyUser = getDummyUser();
+        log.info("유저 조회 시작: userId={}", userId);
+        User actualUser = userRepository.findById(userId)
+             .orElseThrow(() -> new RuntimeException("해당 ID의 유저를 찾을 수 없습니다. userId=" + userId));
 
         // 1. 여행 챕터 생성 (프론트에서 받은 정보)
         TripChapter chapter = new TripChapter();
@@ -99,7 +99,7 @@ public class DiaryService {
         chapter.setTripDays(dto.getTripDays() != null ? dto.getTripDays() : 1);
         chapter.setTotalCost(dto.getTripCost() != null ? dto.getTripCost() : java.math.BigDecimal.ZERO);
         chapter.setKey(UUID.randomUUID().toString());
-        chapter.setUser(dummyUser);
+        chapter.setUser(actualUser);
         TripChapter savedChapter = tripChapterRepository.save(chapter);
 
         // 2. 일기 항목 생성 (아직 본문은 비어있음)
